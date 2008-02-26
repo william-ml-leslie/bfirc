@@ -13,6 +13,9 @@ class message:
 		self.e = False
 
 def _mkncol( n ):
+	n = n.replace( '<', '' )
+	n = n.replace( '>', '' )
+
 	l = len( _VALID_COLS ) 
 	t = 0
 	for i, c in enumerate( n ):
