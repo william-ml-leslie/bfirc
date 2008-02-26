@@ -54,7 +54,7 @@ COMMAND_LIST = [ "quit", "server", "server",
 	"watch", "watch", "names", "ignore",
 	"ignoreto", "ignoreto", "join",
 	"part", "part", "open", "msg", "say",
-	"set", "away", "kick" ]
+	"set", "away", "kick", "alias" ]
 
 COMMAND_LIST.sort()            # hack hack hack
 
@@ -873,7 +873,7 @@ class InputWindow ( irc_window ):
 		s = self.s[ ix : ]
 		s_len = len( s )
 		m = False
-		for c in self.cache:
+		for c in buffers[ current_buffer ].nicklist + self.cache:
 			if c[ : s_len ] == s:
 				m = True
 				self.echo_bg( c[ s_len : ] )
@@ -965,8 +965,7 @@ class InputWindow ( irc_window ):
 			self.mch += c
 			process_input( self, c )
 
-		if i < c_len and len( self.s ) == len( n ):
-			system_write( str( i ) )
+		if self.ix - 1 <= c_len and len( self.s ) == len( n ):
 			process_input( self, ":" )
 			process_input( self, " " )
 			self.mch += ": "
@@ -1603,6 +1602,9 @@ def irc_process_command (connection, command, args):
 	global PING_TIME
 	global SHOW_URL_LIST
 
+	if command in ALIASES:
+		command = ALIASES[ command ]
+
 	buf = current_buffer
 	command = command.lower()
 	if type(args) == str: args = args.split( " " )
@@ -1617,7 +1619,7 @@ def irc_process_command (connection, command, args):
 				raise_error( "Error in hook handler for " + command + ":\n" + traceback.format_exc(0) )
 
 
-	v_cmds = [ "server", "url", "urls", "quit", "buddy", "close", "open", "set", "_stack", "loadrc", "connect" ]
+	v_cmds = [ "server", "url", "urls", "quit", "buddy", "close", "open", "set", "_stack", "loadrc", "connect", "alias" ]
 
 	if not command in v_cmds and not connection.connected:
 		if connection.live:
@@ -1696,6 +1698,13 @@ def irc_process_command (connection, command, args):
 		
 		elif command == "_st":
 			buffers[buf].scroll_to( int( args[0] ) )
+
+		elif command == 'alias':
+			if len( args ) != 2:
+				system_write( 'Usage: /alias <alias> <command>' )
+				return
+	
+			ALIASES[ args[ 0 ] ] = args[ 1 ]
 
 		elif command == "url":
 			if not URL_ACTION:
