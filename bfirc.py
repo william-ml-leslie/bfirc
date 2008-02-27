@@ -3035,7 +3035,7 @@ def __handle_event ( c, e ):
 				raise_error( "Error in hook handler for " + tmp.event_type + ":\n" + traceback.format_exc(0) )
 				
 	
-	if et in EXT_HOOKS:
+	if et in EXT_HOOKS and c and e:
 		EXT_HOOKS[ et ]( c, e )
 	### Development only:
 #	elif et != "all_raw_messages" and not m:
