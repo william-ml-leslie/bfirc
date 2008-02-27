@@ -1036,7 +1036,7 @@ class InputWindow ( irc_window ):
 		if attribs is None:
 			attribs = COLOURS["input"]
 
-		#attribs = attribs | curses.A_BOLD
+		attribs = attribs | curses.A_BOLD
 
 		tmpx = self.window.getyx()[ 1 ]
 		tmpmx = self.window.getmaxyx()[ 1 ]
