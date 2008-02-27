@@ -1041,7 +1041,9 @@ class InputWindow ( irc_window ):
 		tmpx = self.window.getyx()[ 1 ]
 		tmpmx = self.window.getmaxyx()[ 1 ]
 		
-		if tmpx > tmpmx - 30: return
+		if tmpx > tmpmx - 50:
+			curses.flash()
+			return
 
 		y = 0
 		x = 0
