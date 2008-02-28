@@ -350,7 +350,7 @@ class irc_window:
 			if event_type in ["privmsg", "pubmsg", "action"]:
 				self.has_unread = True
 				self.has_unread_messages = True
-			elif event_type in ["join", "part", "quit"]:
+			elif event_type in ["join", "part", "quit"] and SHOW_EVENTS:
 				self.has_unread = True
 				self.has_unread_events = True
 			elif event_type in ["system", "systemwrap", "error"]:
@@ -2145,7 +2145,8 @@ def load_rc (path=None, ft=True):
 			AUTOJOIN_LIST, BUDDY_LIST, IGNORE, \
 			IGNORE_TO, QUIT_MESSAGE, WATCH_LIST, \
 			WATCHWORDS, NICK_COLS, LOGGING, LOGS_DIR, \
-			SYS_COLOURS, INPUT_HOOKS, OUTPUT_HOOKS
+			SYS_COLOURS, INPUT_HOOKS, OUTPUT_HOOKS, \
+			SHOW_EVENTS
 
 	
 	if not path:
