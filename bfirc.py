@@ -1629,7 +1629,7 @@ def irc_process_command (connection, command, args):
 		if connection.live:
 			connection.live = False
 			discon( connection )
-		else:
+		elif command != "_pingserver":
 			system_write('Not connected to server.', current_buffer)
 		return
 	else:
@@ -2821,7 +2821,7 @@ def discon ( connection ):
 	update_status( msg="Disconnected!" )
 	
 	system_write('Reconnecting in 30 seconds...')
-	if current_buffer != MAIN_WINDOW_NAME: system_write('Reconnecting in 30 secs...', current_buffer)
+	#if current_buffer != MAIN_WINDOW_NAME: system_write('Reconnecting in 30 secs...', current_buffer)
 	TIMER_QUEUE = queue_job( TIMER_QUEUE, 30, irc_process_command, connection, "server", SERVER )
 
 def sigint (signum, frame):
