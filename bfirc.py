@@ -1205,6 +1205,8 @@ class MessageWindow( irc_window ):
 def _on_connect (connection, event):
 	global TIMER_QUEUE
 
+	connection.notified = False
+
 	ping_server( connection )
 
 	if PASS:
@@ -1831,8 +1833,14 @@ def irc_process_command (connection, command, args):
 		elif command == "join":
 			for chan in args:
 				chan = chan.lower()
-				if chan not in buffers.keys():
-					connection.join(chan)
+				# if chan not in buffers.keys():
+
+				# ^^ This was messing up the reconnect crap
+				# it's not necessarily a permanent fix but I don't think there's anything
+				# wrong with sending the server a JOIN request for an already joined channel;
+				# it shouldn't break anything.
+
+				connection.join(chan)
 
 		elif command == "part":
 			if not args: args = buf
@@ -2804,8 +2812,12 @@ def scroll_topic ():
 def discon ( connection ):
 	global TIMER_QUEUE
 
-	for buffer in buffers:
-		system_write('Disconnected from server!', buffer)
+	if not connection.notified:
+		for buffer in buffers:
+			system_write('Disconnected from server!', buffer)
+
+		connection.notified = True
+
 	update_status( msg="Disconnected!" )
 	
 	system_write('Reconnecting in 30 seconds...')
@@ -3167,7 +3179,7 @@ def main (scr):
 			try: c = scr.getkey()
 			except: c = None	
 
-			irc.process_once()
+			#irc.process_once()
 			
 			if c:
 				result = process_input(input_win, c, input_win.s)
