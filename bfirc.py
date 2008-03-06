@@ -1206,6 +1206,9 @@ def _on_connect (connection, event):
 	global TIMER_QUEUE
 
 	connection.notified = False
+	if connection.attempts:
+		system_write( 'Connection re-established after [' + str( connection.attempts ) + '] attempts.' )
+	connection.attempts = 0
 
 	ping_server( connection )
 
@@ -2820,7 +2823,11 @@ def discon ( connection ):
 
 	update_status( msg="Disconnected!" )
 	
-	system_write('Reconnecting in 30 seconds...')
+	buffers[ MAIN_WINDOW_NAME ].scroll_to( 0 )
+	connection.attempts += 1
+
+	buffers[ MAIN_WINDOW_NAME ].echo( '\n\tReconnecting in 30 seconds... [' + str( connection.attempts ) + '] attempts.', COLOURS["system"] )
+
 	#if current_buffer != MAIN_WINDOW_NAME: system_write('Reconnecting in 30 secs...', current_buffer)
 	TIMER_QUEUE = queue_job( TIMER_QUEUE, 30, irc_process_command, connection, "server", SERVER )
 
@@ -3213,6 +3220,7 @@ def main (scr):
 
 connections[0] = irc.server()
 connections[0].live = True
+connections[0].attempts = 0
 connections[0].need_autojoin = False
 
 y, x = stdscr.getmaxyx()

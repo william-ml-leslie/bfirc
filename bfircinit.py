@@ -22,6 +22,7 @@ URL = ""
 URL_LIST = []
 URL_ACTION = ""
 SHOW_URL_LIST = False
+SHOW_EVENTS = True
 CHANNEL_LIST = False
 NICK_COLS = False
 DO_RESIZE = False
