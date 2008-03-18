@@ -137,6 +137,7 @@ class irc_window:
 		self.max_h, self.max_w = stdscr.getmaxyx()
 
 		self.win_type = type
+		self.needs_resize = False
 
 
 		self.contents = []
@@ -478,6 +479,10 @@ class irc_window:
 		self.refresh()
 
 	def refresh (self):
+		if self.needs_resize:
+			self.window.resize( self.h, self.w )
+			self.needs_resize = False
+
 		self.window.refresh()
 
 	def get_id (self):
@@ -2381,6 +2386,10 @@ def buffer_switch (buffer=None):
 	update_status(no_refresh=True)
 
   
+	if buffers[current_buffer].needs_resize:
+		buffers[current_buffer].window.resize( buffers[current_buffer].h, buffers[current_buffer].w )
+		buffers[current_buffer].needs_resize = False
+
 	if buffer:
 		buffers[current_buffer].window.redrawwin()
 		buffers[current_buffer].window.noutrefresh()
@@ -2388,6 +2397,8 @@ def buffer_switch (buffer=None):
 	if buffers[current_buffer].dirty:
 		buffers[current_buffer].dirty = False
 		buffers[current_buffer].scroll_to(0)
+
+
 	input_win.noutrefresh()
 	curses.doupdate()
 	irc_topic_change( buffers[current_buffer], buffers[current_buffer].topic_raw )
@@ -2849,16 +2860,23 @@ def do_resize ():
 #	stdscr.refresh()
 	
 	for key in buffers.keys():
+
 		buffers[key].window.erase()
 		buffers[key].resize(no_create=True)
-		buffers[key].window.resize( buffers[key].h, buffers[key].w )
-		if key is not current_buffer or AWAY: buffers[key].dirty = True
+		#buffers[key].window.resize( buffers[key].h, buffers[key].w )
+		if key is not current_buffer or AWAY:
+			buffers[key].dirty = True
+			buffers[key].needs_resize = True
+		else:
+
+			buffers[key].window.resize( buffers[key].h, buffers[key].w )
 		#buffers[key].window.touchwin()
 		#buffers[key].window.redrawwin()
 		buffers[key].window.noutrefresh()
+
 	
 	for win in [away_win, sep_win, context_win]:
-		win.window.erase()
+		#win.window.erase()
 		win.resize(no_create=True)
 		win.window.resize( win.h, win.w )
 
@@ -2866,15 +2884,19 @@ def do_resize ():
 	search_win.resize( no_create=True )
 
 	for win in [status_win, topic_win, info_win, list_win]:
+
 		win.resize(no_create=True)
 		win.window.resize( win.h, win.w )
 		win.window.mvwin( win.y, win.x )
 		win.window.noutrefresh()
 
+
 	for x in [status_win.window, topic_win.window, list_win.window, info_win.window ]:
+
 		x.redrawwin()
 		x.touchwin()
 		x.refresh()
+
 	
 	if not AWAY:
 		buffers[current_buffer].scroll_to(0)
@@ -2886,9 +2908,11 @@ def do_resize ():
 		#sep_win.redraw()
 
 	
+
 	update_info()
 	update_status()
 	input_win.refresh()
+
 
 def sigwinch (signum, frame):
 	global DO_RESIZE
