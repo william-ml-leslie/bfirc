@@ -2854,10 +2854,10 @@ def do_resize ():
 	global DO_RESIZE
 	DO_RESIZE = False
 
-	curses.ungetch("")
+##	curses.ungetch("")
 	curses.endwin()
-	curses.initscr()
-#	stdscr.refresh()
+#	curses.initscr()
+	stdscr.refresh()
 	
 	for key in buffers.keys():
 

@@ -35,7 +35,7 @@ ESCAPE_SEQ = "|*|^|"
 SCROLL_BY = 10
 MAIN_WINDOW_NAME = "(server)"
 SERVER_NAME = "Server"
-QUIT_MESSAGE = "bfirc sucks."
+QUIT_MESSAGE = "bfirc dans ta gueule."
 current_buffer = MAIN_WINDOW_NAME
 
 AUTO_REJOIN = False
