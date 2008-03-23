@@ -900,15 +900,15 @@ class InputWindow ( irc_window ):
 			in_c = ( a in self.cache )
 
 			if len( a ) >= l and not in_c:
-					self.cache.insert( 0, a )
+				self.cache.insert( 0, a )
 
-					c_len = len( self.cache )
+				c_len = len( self.cache )
 
-					if c_len >= self.cache_lmt:
-						try:
-							del cache[ c_len - 1 ]
-						except:
-							raise_error("bobf fucked up again. Tell him I said: " + str( c_len ) + " and also: " + str( len( self.cache ) ) + " and also: " + str( self.cache_lmt ) )
+				if c_len >= self.cache_lmt:
+					try:
+						del self.cache[ c_len - 1 ]
+					except:
+						raise_error("bobf fucked up again. Tell him I said: " + str( c_len ) + " and also: " + str( len( self.cache ) ) + " and also: " + str( self.cache_lmt ) )
 
 			if in_c:
 				self.cache.insert( 0, self.cache.pop( self.cache.index( a ) ) )
@@ -2541,7 +2541,7 @@ def process_input (window, key, string="", refresh=True):
 #			return
 		
 	
-	if len(key) == 1 and ord(key[0]) in [ 32, 33, 34, 39, 40, 41, 44, 45, 46, 59, 58 ]:
+	if len(key) == 1 and ord(key[0]) in [ 32, 33, 34, 39, 40, 41, 44, 45, 46, 59, 58, 63 ]:
 		space_event( window, current_buffer )
 
 	if len(key) == 1 and ord(key[0]) >= 32 and ord(key[0]) < 127:
