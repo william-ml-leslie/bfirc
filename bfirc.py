@@ -934,6 +934,7 @@ class InputWindow ( irc_window ):
 			self.refresh()
 
 		rx = escape_string( self.ts.lower() )
+		if not rx: return None
 
 		c_len = None
 
