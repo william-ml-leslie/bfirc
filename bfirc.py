@@ -1463,9 +1463,13 @@ def _on_nick (connection, event):
 
 def _on_nicknameinuse (connection, event):
 	global NICK
+	if connection.connected:
+		raise_error( "Nickname " + NICK + " is already in use." )
+		return
+
 	new_nick = NICK + str( int( random.random()*100 ) )
 
-	raise_error( "Nickname " + NICK + " in use, using " + new_nick + "" )
+	raise_error( "Nickname " + NICK + " in use, using " + new_nick + "" )
 	NICK = new_nick
 	irc_process_command( connection, "nick", [new_nick] )
 	
