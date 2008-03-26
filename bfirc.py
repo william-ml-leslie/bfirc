@@ -390,6 +390,9 @@ class irc_window:
 		msg_from, attribs, string = format_string( src, string, event_type )
 
 		if event_type in [ 'privmsg', 'pubmsg', 'action' ]:
+			if src in self.nicklist:
+				self.nicklist.insert( 0, self.nicklist.pop( self.nicklist.index( src ) ) )
+
 			if src not in self._ncols.keys():
 				self._ncols[ src ] = mkncol( src )
 			attribs = self._ncols[ src ]
@@ -1315,11 +1318,11 @@ def _on_join (connection, event):
 	if src[0] in ["@", "+"]: src = src[1:]
 
 	if src.lower() != NICK.lower():
-		buffers[targ].nicklist.append(src)
+		buffers[targ].nicklist.insert(0, src)
 		buffers[targ]._ncols[ src ] = mkncol( src )
 		
 
-	buffers[targ].nicklist.sort( key=str.lower )
+	#buffers[targ].nicklist.sort( key=str.lower )
 	
 
 
@@ -1449,7 +1452,7 @@ def _on_nick (connection, event):
 	for key in buffers.keys():
 		if src in buffers[key].nicklist:
 			buffers[key].nicklist[ buffers[key].nicklist.index(src) ] = targ
-			buffers[key].nicklist.sort()
+			#buffers[key].nicklist.sort()
 			buffers[key].write(src, targ, "nick")
 
 		if src == key:
@@ -1787,7 +1790,7 @@ def irc_process_command (connection, command, args):
 		elif command == "allnames":
 			if not len( args ): args = [buf]
 			if birclib.is_channel(args[0]):
-				show_list( "Users in channel " + args[0] + ":", buffers[args[0]].nicklist, extend=True)
+				show_list( "Users in channel " + args[0] + ":", sorted( buffers[args[0]].nicklist, key=str.lower ), extend=True)
 
 		elif command == "watch":
 			if not args: args = [buf]
@@ -1807,7 +1810,7 @@ def irc_process_command (connection, command, args):
 				buffer = current_buffer
 
 			if birclib.is_channel(args[0]):
-				show_list( "Users in channel " + args[0] + ":", buffers[args[0]].nicklist, "User list truncated. Use /allnames to see a full list.", buffer )
+				show_list( "Users in channel " + args[0] + ":", sorted( buffers[args[0]].nicklist, key=str.lower  ), "User list truncated. Use /allnames to see a full list.", buffer )
 
 		elif command == "ignore":
 			if not args:
