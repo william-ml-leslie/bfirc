@@ -1463,7 +1463,7 @@ def _on_nick (connection, event):
 
 def _on_nicknameinuse (connection, event):
 	global NICK
-	if connection.connected:
+	if connection.live:
 		raise_error( "Nickname " + NICK + " is already in use." )
 		return
 
