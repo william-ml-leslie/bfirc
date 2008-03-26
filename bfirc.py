@@ -3248,7 +3248,7 @@ def main (scr):
 
 
 connections[0] = irc.server()
-connections[0].live = True
+connections[0].live = False
 connections[0].attempts = 0
 connections[0].need_autojoin = False
 
