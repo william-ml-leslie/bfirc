@@ -1630,7 +1630,7 @@ def irc_process_command (connection, command, args):
 
 	buf = current_buffer
 	command = command.lower()
-	if command in [ "me", "part", "close", "kick", "topic", "addtopic" ]:
+	if command in [ "me", "part", "close", "kick", "topic", "addtopic" ] and buffers[ current_buffer ].con:
 		connection = buffers[ current_buffer ].con
 
 	if type(args) == str: args = args.split( " " )
@@ -1893,6 +1893,7 @@ def irc_process_command (connection, command, args):
 			if not birclib.nm_to_n(user) in buffers.keys():
 				buffer = user.lower()
 				buffers[buffer] = irc_window("main")
+				buffers[ buffer ].con = connection
 				buffers[ buffer ]._ncols[ buffer ] = mkncol( buffer )
 				max_y = stdscr.getmaxyx()[0]
 				#for i in range(50):
@@ -2894,7 +2895,7 @@ def do_resize ():
 		buffers[key].window.noutrefresh()
 
 	
-	for win in [away_win, sep_win, context_win]:
+	for win in [away_win, sep_win, context_win, message_win]:
 		#win.window.erase()
 		win.resize(no_create=True)
 		win.window.resize( win.h, win.w )
@@ -3167,6 +3168,7 @@ def set_handlers():
 	irc.add_global_handler("pubnotice", __handle_event)
 	irc.add_global_handler("action", __handle_event)
 	irc.add_global_handler("part", __handle_event)
+	i = i + 1 if i + 1 < len( keys ) else 0
 	irc.add_global_handler("join", __handle_event)
 	irc.add_global_handler("quit", __handle_event)
 	irc.add_global_handler("kick", __handle_event)
@@ -3245,7 +3247,9 @@ def main (scr):
 
 				if (type(result) == bool and not result) and ( input_win.s or len(input_win.temp_buffer) ):
 					break
-		input_win.s = input_win.s.rstrip('\020r\020n')
+		if input_win.s.endswith('\020r\020n'):
+			input_win.s = input_win.s[ : -4 ]
+
 		lnb = input_win.s.count("\020r\020n")
 
 		if lnb == 1 and input_win.s[ : -4 ] == "\020r\020n":
