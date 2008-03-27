@@ -1,4 +1,4 @@
-#    bfirc - 0.1.0	Pure Python ncurses IRC client with pretty colours
+#    bfirc - 0.1.1	Pure Python ncurses IRC client with pretty colours
 #    Copyright (C) 2007-2008  Robert Farrell
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -1216,6 +1216,8 @@ class MessageWindow( irc_window ):
 def _on_connect (connection, event):
 	global TIMER_QUEUE
 
+	con_switch( connections.keys()[ connections.values().index( connection ) ] )
+
 	connection.notified = False
 	if connection.attempts:
 		system_write( 'Connection re-established after [' + str( connection.attempts ) + '] attempts.' )
@@ -1992,6 +1994,7 @@ def add_con( s ):
 	connections[ id ] = irc.server()
 	connections[ id ].live = False
 	connections[ id ].attempts = 0
+	connections[ id ].notified = False
 	connections[ id ].need_autojoin = False
 	connections[ id ].connect( s, PORT, NICK, ircname=REALNAME )
 
@@ -2343,6 +2346,7 @@ def update_status (lag=None, no_refresh=False, msg=None):
 		
 		status_win.echo( "[", COLOURS["info"], no_refresh=True, y=tmpy, x=0 )
 		status_win.echo( "Lag: " + lt + "%.02fs" % lag, attribs, no_refresh=True )
+		status_win.echo( " " + current_con + "", _COLOURS["BLUE"] | curses.A_BOLD )
 		status_win.echo( "]", COLOURS["info"], no_refresh=True )
 
 	else:
@@ -2945,12 +2949,18 @@ def dsorted( d ):
 		r.insert( 0, r.pop( r.index( MAIN_WINDOW_NAME ) ) )
 	return r
 
-def con_switch ():
+def con_switch ( s=None ):
 	global current_con
-	keys = connections.keys()
-	i = keys.index( current_con )
-	i = i + 1 if i + 1 < len( keys ) else 0
-	current_con = keys[ i ]
+	if s is None:
+		keys = connections.keys()
+		i = keys.index( current_con )
+		i = i + 1 if i + 1 < len( keys ) else 0
+		current_con = keys[ i ]
+	elif s not in connections.keys():
+		return
+	else:
+		current_con = s
+
 	system_write( 'Switched to connection: ' + str( current_con ) + '' )
 
 def wait_for_key (keys):
