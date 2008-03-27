@@ -133,6 +133,7 @@ class whois_struct:
 
 class irc_window:
 	def __init__ (self, type="main", target=None):
+		self.con = None
 
 		self.max_h, self.max_w = stdscr.getmaxyx()
 
@@ -187,6 +188,7 @@ class irc_window:
 
 	def init(foo):
 		pass
+
 	def redraw (self, no_refresh=False):
 		#self.window.redrawwin()
 		#self.window.touchwin()
@@ -1301,6 +1303,7 @@ def _on_join (connection, event):
 
 	if src.lower() == NICK.lower():
 		buffers[targ] = irc_window("main")
+		buffers[targ].con = connection
 		buffers[targ].has_unread = True
 		buffers[targ].has_unread_events = True
 		max_y = stdscr.getmaxyx()[0]
@@ -1627,6 +1630,9 @@ def irc_process_command (connection, command, args):
 
 	buf = current_buffer
 	command = command.lower()
+	if command in [ "me", "part", "close", "kick", "topic", "addtopic" ]:
+		connection = buffers[ current_buffer ].con
+
 	if type(args) == str: args = args.split( " " )
 
 	override = False
@@ -1663,13 +1669,13 @@ def irc_process_command (connection, command, args):
 				return
 
 			s = args[ 0 ]
-			tmp = s.split('.')
-			if len( tmp ) >= 2:
-				n = tmp[ -2 ]
-			else:
-				n = s
+			#tmp = s.split('.')
+			#if len( tmp ) >= 2:
+			#	n = tmp[ -2 ]
+			#else:
+			#	n = s
 
-			add_conn( n, s )
+			add_con( s )
 			
 		elif command == "loadrc":
 			if args: path = args[ 0 ]
@@ -1839,8 +1845,9 @@ def irc_process_command (connection, command, args):
 
 		elif command == "quit":
 			if not args: args = [QUIT_MESSAGE]
-			connection.quit( " ".join(args) )
-			connection.disconnect()
+			for k in connections:
+				connections[ k ].quit( " ".join(args) )
+				connections[ k ].disconnect()
 			exit_program()
 
 		elif command == "_quit":
@@ -1979,9 +1986,13 @@ def ping_server (connection):
 
 # Internal "other" functions:
 	
-def add_con( n, s ):
-	connections[ n ] = irc.server()
-	connections[ n ].connect( s, PORT, NICK, ircname=REALNAME )
+def add_con( s ):
+	id = ".".join( s.split('.')[-2:] )
+	connections[ id ] = irc.server()
+	connections[ id ].live = False
+	connections[ id ].attempts = 0
+	connections[ id ].need_autojoin = False
+	connections[ id ].connect( s, PORT, NICK, ircname=REALNAME )
 
 def mkncol( s ):
 	if not NICK_COLS: return COLOURS["themtalk"]
@@ -2312,7 +2323,7 @@ def update_status (lag=None, no_refresh=False, msg=None):
 		status_win.window.insch(tmpy, 0, " ")
 	status_win.window.hline( tmpy, 0, curses.ACS_HLINE, status_win.w - tmpx )
 
-	if not msg and connections[0].connected:
+	if not msg and connections[ current_con ].connected:
 		if lag:
 			status_win.lag = lag
 		else:
@@ -2623,7 +2634,7 @@ def process_input (window, key, string="", refresh=True):
 		window.mvc( - window.cpos )
 
 	elif key == chr(24):	  #C-x
-		conn_switch()
+		con_switch()
 
 	elif key == chr(5):		  #C-e
 		irc_process_command( None, "urls", None )
@@ -2933,8 +2944,13 @@ def dsorted( d ):
 		r.insert( 0, r.pop( r.index( MAIN_WINDOW_NAME ) ) )
 	return r
 
-def conn_switch ():
-	pass
+def con_switch ():
+	global current_con
+	keys = connections.keys()
+	i = keys.index( current_con )
+	i = i + 1 if i + 1 < len( keys ) else 0
+	current_con = keys[ i ]
+	system_write( 'Switched to connection: ' + str( current_con ) + '' )
 
 def wait_for_key (keys):
 	if keys == None: keys = []
@@ -2992,7 +3008,7 @@ def check_time( t ):
 	global PING_TIME
 
 	if time.time() - PING_TIME > 20.0:		
-		TIMER_QUEUE = queue_unique( TIMER_QUEUE, 2, ping_server, connections[0] )
+		TIMER_QUEUE = queue_unique( TIMER_QUEUE, 2, ping_server, connections[ current_con ] )
 		PING_TIME = time.time()
 
 	if time.strftime("%d") != time.strftime("%d", t):
@@ -3172,6 +3188,7 @@ def main (scr):
 	global PING_TIME
 	global DO_RESIZE
 	global RC_PATH
+	global current_con
 	
 	try:
 		path = sys.argv[1]
@@ -3191,7 +3208,10 @@ def main (scr):
 
 	if SERVER:
 		try:
-			connections[0].connect(SERVER, PORT, NICK, ircname=REALNAME)
+			key = ".".join( SERVER.split('.')[-2:] )
+			connections[ key ] = connections.pop( 0 ) 
+			connections[ key ].connect(SERVER, PORT, NICK, ircname=REALNAME)
+			current_con = key
 		except birclib.ServerConnectionError, x:
 			print x
 			sys.exit(1)
@@ -3225,6 +3245,7 @@ def main (scr):
 
 				if (type(result) == bool and not result) and ( input_win.s or len(input_win.temp_buffer) ):
 					break
+		input_win.s = input_win.s.rstrip('\020r\020n')
 		lnb = input_win.s.count("\020r\020n")
 
 		if lnb == 1 and input_win.s[ : -4 ] == "\020r\020n":
@@ -3246,8 +3267,8 @@ def main (scr):
 				command = "/".join( line.split("/")[1:] )
 				args = command.split(" ")[1:]
 				command = command.split(" ")[0]
-				irc_process_command(connections[0], command, args)
-			elif len(line): irc_process_command(connections[0], "say", line.split(" "))
+				irc_process_command(connections[current_con], command, args)
+			elif len(line): irc_process_command( buffers[current_buffer].con, "say", line.split(" "))
 
 
 connections[0] = irc.server()

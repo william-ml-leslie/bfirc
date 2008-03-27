@@ -37,7 +37,7 @@ MAIN_WINDOW_NAME = "(server)"
 SERVER_NAME = "Server"
 QUIT_MESSAGE = "bfirc dans ta gueule."
 current_buffer = MAIN_WINDOW_NAME
-
+current_con = 0
 AUTO_REJOIN = False
 SCROLL_TOPIC = True
 SCROLL_SEP = "   ***   "
