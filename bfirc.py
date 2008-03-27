@@ -1391,7 +1391,7 @@ def _on_quit (connection, event):
 		notified = True
 
 	for buffer in buffers.keys():
-		if src in buffers[buffer].nicklist:
+		if buffers[buffer].con == connection and src in buffers[buffer].nicklist:
 			buffers[buffer].nicklist.pop ( buffers[buffer].nicklist.index(src) )
 			if buffer in WATCH_LIST and not notified:
 				notice( [buffer + ":", src, "has quit."], src, COLOURS["offline"] )
