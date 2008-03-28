@@ -108,10 +108,10 @@ SYS_COLOURS = {
 	"select" : ( "WHITE", "BLUE" )
 }
 
-stdscr = curses.initscr()
-curses.start_color()
-curses.use_default_colors()
-stdscr.timeout(TIMEOUT)
+#stdscr = curses.initscr()
+#curses.start_color()
+#curses.use_default_colors()
+#stdscr.timeout(TIMEOUT)
 
 
 
@@ -152,31 +152,31 @@ def make_colours( cols=None ):
 	
 	return COLOURS
 
-COLOURS = make_colours( SYS_COLOURS )
+#COLOURS = make_colours( SYS_COLOURS )
 
 def make_events ():
 	events = [
-		("error", "e",  "(@) %s: Error: %s", COLOURS["error"]),
-		("system", "s", "(@) %s: %s", COLOURS["system"]),
-		("systemwrap", "s", "(@) %s: %s", COLOURS["system"]),
-		("time", "t", "(@) %s: %s\n", COLOURS["system"]),
-		("topic", "T", "(^) %s changed topic to %s", COLOURS["system"]),
-		("nick", "n", "(=) %s is now known as %s", COLOURS["system"]),
-		("pubmsg", "@", them_decor.prefix + "%s" + them_decor.suffix, COLOURS["themtalk"]),
-		("privmsg",	"@", them_decor.prefix + "%s" + them_decor.suffix, COLOURS["themtalk"]),
-		("servernotice", "S", system_decor.prefix + SERVER_NAME + system_decor.suffix + "%s", COLOURS["system"]),
-		("privnotice", "v", "Notice: " + them_decor.prefix + "%s" + them_decor.suffix, COLOURS["themtalk"]),
-		("pubnotice", "P", system_decor.prefix + "%s" + system_decor.suffix, COLOURS["themtalk"]),
-		("action", "^", them_act_decor.prefix + "%s" + them_act_decor.suffix, COLOURS["themact"]),
-		("join", "j", "(-) %s has joined", COLOURS["system"]),
-		("part", "p", ")-( %s has left", COLOURS["system"]),
-		("kick", "k", "]-[ %s was kicked by %s", COLOURS["system"]),
-		("quit", "q", ")o( %s has quit: %s", COLOURS["system"]),
-		("me_say", "%", me_decor.prefix + "%s" + me_decor.suffix, COLOURS["metalk"]),
-		("me_action", "~", me_act_decor.prefix + "%s" + me_act_decor.suffix, COLOURS["meact"]),
-		("me_msg", "%", me_decor.prefix + "%s" + me_decor.suffix, COLOURS["metalk"]),
-		("msg_to_me", "m", "PM <- %s: ", COLOURS["themtalk"]),
-		("msg_from_me", "M", "PM -> %s: ", COLOURS["metalk"])
+		("error", "e",  "(@) %s: Error: %s", "error"),
+		("system", "s", "(@) %s: %s", "system"),
+		("systemwrap", "s", "(@) %s: %s", "system"),
+		("time", "t", "(@) %s: %s\n", "system"),
+		("topic", "T", "(^) %s changed topic to %s", "system"),
+		("nick", "n", "(=) %s is now known as %s", "system"),
+		("pubmsg", "@", them_decor.prefix + "%s" + them_decor.suffix, "themtalk"),
+		("privmsg",	"@", them_decor.prefix + "%s" + them_decor.suffix, "themtalk"),
+		("servernotice", "S", system_decor.prefix + SERVER_NAME + system_decor.suffix + "%s", "system"),
+		("privnotice", "v", "Notice: " + them_decor.prefix + "%s" + them_decor.suffix, "themtalk"),
+		("pubnotice", "P", system_decor.prefix + "%s" + system_decor.suffix, "themtalk"),
+		("action", "^", them_act_decor.prefix + "%s" + them_act_decor.suffix, "themact"),
+		("join", "j", "(-) %s has joined", "system"),
+		("part", "p", ")-( %s has left", "system"),
+		("kick", "k", "]-[ %s was kicked by %s", "system"),
+		("quit", "q", ")o( %s has quit: %s", "system"),
+		("me_say", "%", me_decor.prefix + "%s" + me_decor.suffix, "metalk"),
+		("me_action", "~", me_act_decor.prefix + "%s" + me_act_decor.suffix, "meact"),
+		("me_msg", "%", me_decor.prefix + "%s" + me_decor.suffix, "metalk"),
+		("msg_to_me", "m", "PM <- %s: ", "themtalk"),
+		("msg_from_me", "M", "PM -> %s: ", "metalk")
 	]
 
 	return events

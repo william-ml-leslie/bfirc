@@ -39,7 +39,7 @@ def format_string( src, string, event_type, events=None ):
 					string = event[2] % (src, string)
 				elif event[2].count("%s") == 1:
 					msg_from = event[2] % (src)
-				attribs = event[3]
+				attribs = COLOURS[ event[3] ]
 				break
 
 	return (msg_from, attribs, string)

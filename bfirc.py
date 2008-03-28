@@ -132,10 +132,10 @@ class whois_struct:
 
 
 class irc_window:
-	def __init__ (self, type="main", target=None):
+	def __init__ (self, scr, type):#, target=None):
 		self.con = None
 
-		self.max_h, self.max_w = stdscr.getmaxyx()
+		self.max_h, self.max_w = scr.getmaxyx()
 
 		self.win_type = type
 		self.needs_resize = False
@@ -161,7 +161,7 @@ class irc_window:
 		self.has_unread_to_me = False
 
 
-		if not type == "input":	self.resize()
+		if not type == "input":	self.resize( scr )
 
 
 
@@ -197,10 +197,10 @@ class irc_window:
 			self.window.refresh()
 		input_win.refresh()
 
-	def resize (self, no_create=False):
+	def resize (self, scr, no_create=False):
 		global SCROLL_BY
 
-		self.max_h, self.max_w = stdscr.getmaxyx()
+		self.max_h, self.max_w = scr.getmaxyx()
 		type = self.win_type
 		if type == "main":
 			self.h = self.max_h - 3
@@ -507,7 +507,7 @@ class irc_window:
 		search_win.refresh()
 		try:
 			while True:
-				try: c = stdscr.getkey()
+				try: c = scr.getkey()
 				except: c = None	
 				if c:
 					result = process_input(search_win, c, search_win.s)#, True)
@@ -836,8 +836,8 @@ class irc_window:
 		
 
 class InputWindow ( irc_window ):
-	def __init__ ( self ):
-		irc_window.__init__( self, "input" )
+	def __init__ ( self, scr ):
+		irc_window.__init__( self, scr, "input" )
 		self.autocomp = False
 		self.temp_buffer = []
 		self.cpos = 0
@@ -854,13 +854,13 @@ class InputWindow ( irc_window ):
 		self.cache_lmt = 100
 		self.cache_m = []
 		self.pview = False	
-		self.resize()
+		self.resize( scr )
 		self.mvrel = 0
 
 		self.window = curses.newpad( 1, 512 )
 
-	def resize( self, no_create=True ):
-		self.max_h, self.max_w = stdscr.getmaxyx()
+	def resize( self, scr, no_create=True ):
+		self.max_h, self.max_w = scr.getmaxyx()
 		self.y = self.max_h - 1
 		self.x = 15
 		self.h = 1
@@ -1192,8 +1192,8 @@ class InputWindow ( irc_window ):
 
 
 class MessageWindow( irc_window ):
-	def __init__ ( self ):
-		irc_window.__init__( self, "input" )
+	def __init__ ( self, scr ):
+		irc_window.__init__( self, scr, "input" )
 		
 		self.y = self.max_h - 1
 		self.x = 15
@@ -1304,11 +1304,11 @@ def _on_join (connection, event):
 	targ = event.target().lower()
 
 	if src.lower() == NICK.lower():
-		buffers[targ] = irc_window("main")
+		buffers[targ] = irc_window( irc_window.scr, "main")
 		buffers[targ].con = connection
 		buffers[targ].has_unread = True
 		buffers[targ].has_unread_events = True
-		max_y = stdscr.getmaxyx()[0]
+		max_y = buffers[targ].window.getmaxyx()[0]#scr.getmaxyx()[0]
 		buffers[targ].scroll(max_y)
 		buffers[targ].scroll_to(0)
 
@@ -1894,10 +1894,10 @@ def irc_process_command (connection, command, args):
 
 			if not birclib.nm_to_n(user) in buffers.keys():
 				buffer = user.lower()
-				buffers[buffer] = irc_window("main")
+				buffers[buffer] = irc_window( irc_window.scr, "main")
 				buffers[ buffer ].con = connection
 				buffers[ buffer ]._ncols[ buffer ] = mkncol( buffer )
-				max_y = stdscr.getmaxyx()[0]
+				#max_y = scr.getmaxyx()[0]
 				#for i in range(50):
 				buffers[buffer].scroll(50)
 				buffers[buffer].scroll_to(0)
@@ -2864,7 +2864,8 @@ def discon ( connection ):
 	buffers[ MAIN_WINDOW_NAME ].echo( '\n\tReconnecting in 30 seconds... [' + str( connection.attempts ) + '] attempts.', COLOURS["system"] )
 
 	#if current_buffer != MAIN_WINDOW_NAME: system_write('Reconnecting in 30 secs...', current_buffer)
-	TIMER_QUEUE = queue_job( TIMER_QUEUE, 30, irc_process_command, connection, "server", SERVER )
+	system_write( connection.server )
+	TIMER_QUEUE = queue_job( TIMER_QUEUE, 30, irc_process_command, connection, "server", connection.server )
 
 def sigint (signum, frame):
 	if SEARCH_MODE:
@@ -2874,19 +2875,19 @@ def sigint (signum, frame):
 	if ask_yes_no("Quit " + PROGRAM_NAME + "?"):
 		exit_program()
 
-def do_resize ():
+def do_resize ( scr ):
 	global DO_RESIZE
 	DO_RESIZE = False
 
 ##	curses.ungetch("")
 	curses.endwin()
 #	curses.initscr()
-	stdscr.refresh()
+	scr.refresh()
 	
 	for key in buffers.keys():
 
 		buffers[key].window.erase()
-		buffers[key].resize(no_create=True)
+		buffers[key].resize(scr, no_create=True)
 		#buffers[key].window.resize( buffers[key].h, buffers[key].w )
 		if key is not current_buffer or AWAY:
 			buffers[key].dirty = True
@@ -2901,15 +2902,15 @@ def do_resize ():
 	
 	for win in [away_win, sep_win, context_win, message_win]:
 		#win.window.erase()
-		win.resize(no_create=True)
+		win.resize(scr, no_create=True)
 		win.window.resize( win.h, win.w )
 
-	input_win.resize( no_create=True )
-	search_win.resize( no_create=True )
+	input_win.resize( scr, no_create=True )
+	search_win.resize( scr, no_create=True )
 
 	for win in [status_win, topic_win, info_win, list_win]:
 
-		win.resize(no_create=True)
+		win.resize( scr, no_create=True)
 		win.window.resize( win.h, win.w )
 		win.window.mvwin( win.y, win.x )
 		win.window.noutrefresh()
@@ -2963,14 +2964,14 @@ def con_switch ( s=None ):
 
 	system_write( 'Switched to connection: ' + str( current_con ) + '' )
 
-def wait_for_key (keys):
+def wait_for_key (keys ):
 	if keys == None: keys = []
 
 	curses.ungetch("*")
 		
 	c = ""
 	while c not in keys:
-		c = stdscr.getch()
+		c = buffers[current_buffer].window.getch()
 
 		if c and not keys and c is not ord("*") and c > 0:
 			return None
@@ -3201,7 +3202,37 @@ def main (scr):
 	global DO_RESIZE
 	global RC_PATH
 	global current_con
-	
+	global COLOURS
+	global EVENTS
+	global input_win, search_win, message_win, status_win,\
+	info_win, away_win, sep_win, context_win, list_win, topic_win
+
+	curses.start_color()
+	curses.use_default_colors()
+	scr.timeout( 307 )
+	COLOURS = make_colours( SYS_COLOURS )
+	EVENTS = make_events()
+	irc_window.scr = scr
+	buffers[MAIN_WINDOW_NAME] = irc_window(scr, "main")
+
+	input_win = InputWindow( scr )
+	search_win = InputWindow( scr )
+
+	message_win = MessageWindow( scr )
+
+	status_win = irc_window(scr, "status")
+	info_win = irc_window(scr, "info")
+
+	away_win = irc_window(scr, "away")
+	sep_win = irc_window(scr, "sep")
+	context_win = irc_window(scr, "context")
+
+	list_win = irc_window(scr, "list")
+	topic_win = irc_window(scr, "topic")
+
+	COLOURS["topic"] = COLOURS["topic"] | curses.A_BOLD
+	topic_win.window.erase()
+	list_win.window.erase()
 	try:
 		path = sys.argv[1]
 		RC_PATH = path
@@ -3238,7 +3269,7 @@ def main (scr):
 
 		while True:
 			if DO_RESIZE:
-				do_resize()
+				do_resize( scr )
 
 			TIMER_QUEUE = process_queue(TIMER_QUEUE)
 
@@ -3290,7 +3321,6 @@ connections[0].live = False
 connections[0].attempts = 0
 connections[0].need_autojoin = False
 
-y, x = stdscr.getmaxyx()
 
 signal.signal(signal.SIGWINCH, sigwinch)
 signal.signal(signal.SIGINT, sigint)
@@ -3298,26 +3328,6 @@ signal.signal(signal.SIGINT, sigint)
 PASTE = Paste()
 
 
-buffers[MAIN_WINDOW_NAME] = irc_window("main")
-
-input_win = InputWindow()
-search_win = InputWindow()
-
-message_win = MessageWindow()
-
-status_win = irc_window("status")
-info_win = irc_window("info")
-
-away_win = irc_window("away")
-sep_win = irc_window("sep")
-context_win = irc_window("context")
-
-list_win = irc_window("list")
-topic_win = irc_window("topic")
-
-COLOURS["topic"] = COLOURS["topic"] | curses.A_BOLD
-topic_win.window.erase()
-list_win.window.erase()
 
 
 try: curses.wrapper(main)
