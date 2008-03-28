@@ -2955,7 +2955,14 @@ def con_switch ( s=None ):
 	if s is None:
 		keys = connections.keys()
 		i = keys.index( current_con )
-		i = i + 1 if i + 1 < len( keys ) else 0
+
+		# male's a cunt
+		# i = i + 1 if i + 1 < len( keys ) else 0
+		if i + 1 < len( keys ):
+			i = i + 1:
+		else:
+			i = 0
+
 		current_con = keys[ i ]
 	elif s not in connections.keys():
 		return
