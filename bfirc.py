@@ -2363,6 +2363,9 @@ def update_status (lag=None, no_refresh=False, msg=None):
 
 def buffer_switch (buffer=None):
 	global current_buffer
+	global current_con
+
+
 	if AWAY: return
 
 	_skeys = dsorted( buffers.keys() )	
@@ -2405,6 +2408,7 @@ def buffer_switch (buffer=None):
 		buffers[current_buffer].has_unread_messages = False
 		buffers[current_buffer].has_unread_to_me = False
 
+	current_con = buffer.con
 
 	update_info(buffer)
 	update_status(no_refresh=True)
