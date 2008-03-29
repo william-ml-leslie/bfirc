@@ -2408,7 +2408,8 @@ def buffer_switch (buffer=None):
 		buffers[current_buffer].has_unread_messages = False
 		buffers[current_buffer].has_unread_to_me = False
 
-	current_con = buffer.con
+	if buffer:
+		current_con = connections.keys()[ connections.values().index( buffers[current_buffer].con) ]#connections.keys()[ buffers.values().index( buffer.con ) ]
 
 	update_info(buffer)
 	update_status(no_refresh=True)
