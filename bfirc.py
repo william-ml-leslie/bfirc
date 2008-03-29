@@ -2959,7 +2959,7 @@ def con_switch ( s=None ):
 		# male's a cunt
 		# i = i + 1 if i + 1 < len( keys ) else 0
 		if i + 1 < len( keys ):
-			i = i + 1:
+			i = i + 1
 		else:
 			i = 0
 
