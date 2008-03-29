@@ -2408,9 +2408,9 @@ def buffer_switch (buffer=None):
 		buffers[current_buffer].has_unread_messages = False
 		buffers[current_buffer].has_unread_to_me = False
 
-	if buffer:
-		
-		con_switch = connections.keys()[ connections.values().index( buffers[current_buffer].con) ]#connections.keys()[ buffers.values().index( buffer.con ) ]
+	if buffer and buffers[current_buffer].con in connections.values():
+		con_switch( connections.keys()[ connections.values().index( buffers[current_buffer].con) ] )
+
 
 	update_info(buffer)
 	update_status(no_refresh=True)
@@ -2975,7 +2975,6 @@ def con_switch ( s=None ):
 	else:
 		current_con = s
 
-	system_write( 'Switched to connection: ' + str( current_con ) + '' )
 
 def wait_for_key (keys ):
 	if keys == None: keys = []
