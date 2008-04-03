@@ -507,7 +507,7 @@ class irc_window:
 		search_win.refresh()
 		try:
 			while True:
-				try: c = scr.getkey()
+				try: c = self.scr.getkey()
 				except: c = None	
 				if c:
 					result = process_input(search_win, c, search_win.s)#, True)
