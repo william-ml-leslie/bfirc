@@ -1240,6 +1240,10 @@ def _on_connect (connection, event):
 def _on_privmsg (connection, event):
 	global NICK
 	src = birclib.nm_to_n(event.source())
+
+	if not event.arguments(): # For some reason this is necessary; two people in one day
+# found this to be a bug even though I've never seen it before. Oh well.
+		return
 	s = event.arguments()[0]
 
 	ignored = is_ignored( src, s )
