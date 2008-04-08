@@ -402,7 +402,7 @@ class irc_window:
 
 		highlight_msg = False
 
-		if msg_from and is_highlighted( string )[ 0 ]:
+		if msg_from and in_watchwords( string )[ 0 ]:
 			highlight_msg = True	
 			#string = "%s" % string
 			if self.get_id() != current_buffer:
@@ -656,11 +656,15 @@ class irc_window:
 	def compile_escape_string( self, msg_from, attribs, string, stamp ):
 		if stamp:
 			if msg_from:
-				ih, string = is_highlighted( string )
-				if ih:
-					p = COLOURS["highlight"]
-				else:
-					p = COLOURS["plain"]
+				p = False
+				p, string = in_highlights( string )
+				if not p:
+					ih, string = in_watchwords( string )
+					if ih:
+						p = COLOURS["highlight"]
+					else:
+						p = COLOURS["plain"]
+
 
 				o = str(COLOURS["stamp"]) + \
 					ESCAPE_SEQ + \
@@ -1555,10 +1559,22 @@ def debug_event (connection, event):
 
 # Internal IRC-related functions:
 
-
-def is_highlighted ( s ):
+def in_highlights( s ):
 	h = False
-	for m in WATCH_WORDS + [ NICK ]:
+	for m in HIGHLIGHTS:
+		rx = re.search( '(%s)' % m, s )
+		if rx:
+			s = re.sub( '(%s)' % m, '\\1', s )
+			if not HIGHLIGHTS[ m ] in COLOURS:
+				raise_error('Error in rc file HIGHLIGHTS: Could not find %s definition \
+				in SYS_COLOURS' % HIGHLIGHTS[ m ] )
+				continue
+			h = COLOURS[ HIGHLIGHTS[ m ] ]
+	return h, s
+		
+def in_watchwords ( s ):
+	h = False
+	for m in WATCHWORDS + [ NICK ]:
 		if re.search("^"+m+"\W|\W"+m+"\W|\W"+m+"$|^"+m+"$", s):
 			s = s.replace( m, '' + m + '' )
 			h = True
@@ -2189,7 +2205,7 @@ def load_rc (path=None, ft=True):
 			IGNORE_TO, QUIT_MESSAGE, WATCH_LIST, \
 			WATCHWORDS, NICK_COLS, LOGGING, LOGS_DIR, \
 			SYS_COLOURS, INPUT_HOOKS, OUTPUT_HOOKS, \
-			SHOW_EVENTS
+			SHOW_EVENTS, HIGHLIGHTS
 
 	
 	if not path:
