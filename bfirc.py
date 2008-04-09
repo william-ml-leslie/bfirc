@@ -536,16 +536,29 @@ class irc_window:
 			self.scroll_to(0)
 			return
 
+		no_sch = False
 		while True:
 			try:
-				self.scroll( self.h*2, v=True )
-				self.scroll_to( sch, hl=s )
+				if not no_sch:
+					self.scroll( self.h*2, v=True )
+					self.scroll_to( sch, hl=s )
+
+				no_sch = False
+
 				if sch:
-					c = ask_question( "r: search again, x: stop search.", ["r", "x"] )
+					c = ask_question( "r: search again, x: stop search.", ["r", "x", 339, 338] )
 				if c == "x":
 					raise EndSearch
 				elif c == "r":
 					sch = False
+				elif c == 339:
+					self.scroll_to( self.scrolling + 1, hl=s )
+					no_sch = True
+					continue
+				elif c == 338:
+					self.scroll_to( self.scrolling -1, hl=s )
+					no_sch = True
+					continue
 
 				while sch is False:
 					sch = self.scroll( 1, v=True, m=s )
@@ -2173,6 +2186,9 @@ def debug_echo (s, buffer=MAIN_WINDOW_NAME):
 
 def ask_question (q, k=None):
 	curses.curs_set( 0 )
+	irc_window.scr.nodelay( True )
+	irc_window.scr.getch()
+	irc_window.scr.nodelay( False )
 	message_win.echo(q) 
 	r = wait_for_key(k)
 	input_win.refresh()
@@ -3003,7 +3019,7 @@ def wait_for_key (keys ):
 		
 	c = ""
 	while c not in keys:
-		c = buffers[current_buffer].window.getch()
+		c = irc_window.scr.getch()#buffers[current_buffer].window.getch()
 
 		if c and not keys and c is not ord("*") and c > 0:
 			return None
