@@ -1209,7 +1209,7 @@ class InputWindow ( irc_window ):
 
 
 
-class MessageWindow( irc_window ):
+class MessageWindow( InputWindow ):#irc_window ):
 	def __init__ ( self, scr ):
 		irc_window.__init__( self, scr, "input" )
 		
@@ -1683,7 +1683,8 @@ def irc_process_command (connection, command, args):
 
 	v_cmds = [ "server", "url", "urls", "quit", "buddy", "close", "open", "set", "_stack", "loadrc", "connect", "alias" ]
 
-	if not command in v_cmds and not connection.connected:
+
+	if not command in v_cmds and connection and not connection.connected:
 		if connection.live:
 			connection.live = False
 			discon( connection )
@@ -1953,6 +1954,8 @@ def irc_process_command (connection, command, args):
 				buffers[buffer].write( user, msg, "me_msg" )
 
 		elif command == "say":
+			if not connection:
+				return
 			text = " ".join(args)
 			connection.privmsg(buf, text)
 			buffers[buf].write(NICK, text, "me_say") 
@@ -2943,13 +2946,17 @@ def do_resize ( scr ):
 		buffers[key].window.noutrefresh()
 
 	
-	for win in [away_win, sep_win, context_win, message_win]:
+	for win in [away_win, sep_win, context_win, message_win]:#, input_win, search_win]:
 		#win.window.erase()
 		win.resize(scr, no_create=True)
+		win.window.mvwin( win.y, win.x )
 		win.window.resize( win.h, win.w )
+		win.window.noutrefresh()
+	
+	for win in [input_win, search_win]:
+		win.resize(scr, no_create=True)
+		win.refresh()
 
-	input_win.resize( scr, no_create=True )
-	search_win.resize( scr, no_create=True )
 
 	for win in [status_win, topic_win, info_win, list_win]:
 
