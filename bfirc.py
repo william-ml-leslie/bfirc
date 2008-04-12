@@ -2193,6 +2193,7 @@ def ask_question (q, k=None):
 	irc_window.scr.nodelay( True )
 	irc_window.scr.getch()
 	irc_window.scr.nodelay( False )
+	irc_window.scr.timeout( 307 )
 	message_win.echo(q) 
 	r = wait_for_key(k)
 	input_win.refresh()
@@ -3318,6 +3319,7 @@ def main (scr):
 	buffer_switch()
 	t = time.localtime()
 	PING_TIME = time.time()
+	scr.timeout( 307 )
 
 	while True:
 		if not AWAY:
@@ -3337,7 +3339,7 @@ def main (scr):
 			try: c = scr.getkey()
 			except: c = None	
 
-			#irc.process_once()
+			irc.process_once()
 			
 			if c:
 				result = process_input(input_win, c, input_win.s)
