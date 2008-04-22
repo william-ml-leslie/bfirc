@@ -21,6 +21,9 @@ import birclib
 import parseopt
 import re
 import curses
+import struct
+import fcntl
+import termios
 from parseopt import ParseError
 from bfircinit import *
 from bfircinit import _COLOURS, _INPUT_HOOKS, _OUTPUT_HOOKS
@@ -2932,10 +2935,19 @@ def sigint (signum, frame):
 	if ask_yes_no("Quit " + PROGRAM_NAME + "?"):
 		exit_program()
 
+def gethw():
+	 h, w = struct.unpack(
+		 "hhhh", fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, "\000"*8))[0:2]
+	 return h, w
+
 def do_resize ( scr ):
 	global DO_RESIZE
 	DO_RESIZE = False
 
+	h, w = gethw()
+
+	os.environ["LINES"] = str( h )
+	os.environ["COLUMNS"] = str( w )
 ##	curses.ungetch("")
 	curses.endwin()
 #	curses.initscr()
