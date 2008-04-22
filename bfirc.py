@@ -2960,8 +2960,8 @@ def do_resize ( scr ):
 	for win in [away_win, sep_win, context_win, message_win]:#, input_win, search_win]:
 		#win.window.erase()
 		win.resize(scr, no_create=True)
-		win.window.mvwin( win.y, win.x )
 		win.window.resize( win.h, win.w )
+		win.window.mvwin( win.y, win.x )
 		win.window.noutrefresh()
 	
 	for win in [input_win, search_win]:
