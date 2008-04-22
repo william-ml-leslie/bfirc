@@ -1228,6 +1228,12 @@ class MessageWindow( InputWindow ):#irc_window ):
 		self.window.redrawwin()
 		self.window.refresh()
 	
+	def resize( self, scr, no_create=True ):
+		self.max_h, self.max_w = scr.getmaxyx()
+		self.y = self.max_h - 1
+		self.x = 15
+		self.h = 1
+		self.w = self.max_w - self.x
 	
 # Event handlers:
 
@@ -1284,7 +1290,10 @@ def _on_action (connection, event):
 
 
 def _on_privnotice(connection, event):
-	s = event.arguments()[0] 
+	if len( event.arguments() ) < 2:
+		return
+
+	s = event.arguments()[1] 
 	if event.source():
 		src = birclib.nm_to_n( event.source() )
 		buffer = current_buffer
@@ -1698,8 +1707,9 @@ def irc_process_command (connection, command, args):
 	try:
 		if command == "server":
 			SERVER = args[0]
-			if len(args) >= 2: PORT = args[1]
-			connection.connect(SERVER, PORT, NICK, ircname=REALNAME)
+			if len(args) >= 2: connection.port = args[1]
+			#connection.connect(SERVER, PORT, NICK, ircname=REALNAME)
+			connection.connect(connection.server, connection.port, NICK, ircname=REALNAME)
 
 		elif command == "connect":
 			if not len( args ):
