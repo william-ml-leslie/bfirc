@@ -1,0 +1,263 @@
+0.1.1
+	*	I finally got around to implementing multiconnection
+		support, so this release and probably one or two
+		after it will be focused on getting that to be as
+		clean as possible. Hopefully by the time this release
+		is out enough people will have been testing it that
+		it will actually work.
+
+	*	Fixed that dumb bug that makes it ask you how you want
+		to send the multiple lines in a paste even if it's only
+		one line.
+
+0.1.0
+	*	Oops, I fucked up the away mode code that decides which
+		messages get shown in away mode. I woke up with 76 messages
+		in my away window just because I had a PM window open for
+		someone, so it logged all messages that person said, in
+		any channel. It is now fixed.
+
+	*	The /names command was buggy and could cause crashes if
+		a channel was specified as an argument, not it should
+		work fine.
+	
+	*	Another horrible bug in away mode because the selected
+		message index wasn't being reinitialised when away mode
+		was set.
+
+	*	Added /alias <alias> <command>, e.g. /alias who names
+		So /who will now act like /names. It's a dictionary in
+		the rc file, e.g.: ALIASES = { 'who' : 'names' }
+	
+	*	SHOW_EVENTS in the rc file set to False will stop any
+		join/part/quit events being shown in the info bar thing.
+
+0.0.9
+	*	Someone requested /ping be implemented as it's apparently
+		useful, so it now works (and responds to other ping
+		requests).
+	
+	*	Changed the auto-reconnect delay from 5 seconds to 30 seconds.
+
+	*	Added /umode, I never used it but apparently people do.
+
+	*	Undernet seems to have a completely different setup to nickserv
+		and chanserv and stuff so it complicates things somewhat.
+		I don't use it personally but I'm fixing things up so it works
+		better with undernet. You can now do /pass or /quote pass
+		as undernet sometimes requests.
+	
+	*	An oversight in the escape sequence handling routines meant
+		keyboard input could get locked out and it turns out it was
+		easier to fix than I thought so that should be fixed now.
+		Just keep typing and it should fill the escape char buffer
+		and behave normally again.
+
+	*	/quote and /raw do the same thing, for sending raw strings
+		to the server. So even if there's something I haven't implemented
+		yet you can do it like that, but please email me if you're
+		using it all the time for something so I can add a proper
+		command in.
+
+	*	Fixed a bug that was preventing PMs in open query windows from being
+		logged while in away mode. Also prepended the channel the
+		last message was said in to the most recent message line at
+		the top of away mode, e.g. #bfirc: <bobf> foo bar baz
+
+	*	Going to the beginning of the input window after typing something
+		and pressing tab would crash the client, this is now fixed.
+
+	*	There was a bug that crashed bfirc if a /whois was done on a
+		non-existent nick.
+0.0.8
+	*	First on the list is, I've got rid of that stupid list of
+		global variables from the sample rc file, as it's no longer
+		necessary (thanks to Python's globals() function that I
+		somehow previously misunderstood).
+	
+	*	In this version I'm also going to try to put in as many of
+		the missing event handlers as possible. It seems stupid
+		not having things like "nosuchnick" being handled when all
+		it requires is raise_error( "No such nick." ), so hopefully
+		when I get this release out it'll have a load more, I'll keep
+		a list here if I can remember them:
+		
+		Events handled as of 0.0.8:
+			nosuchnick
+			topicinfo
+			cannotsendtochan
+			mode
+	
+	*	Finally fixed (I hope) a very annoying and stupid bug that made
+		the client crash when the long word cache got full; if it breaks
+		now there'll be an error rather than a crash, but it should be
+		fixed.
+
+	*	I added a new, special input hook called "word" which is called
+		whenever you finish typing a word into the input window (i.e.
+		when you press space, comma, full stop, etc.). It's different
+		to all the other input hooks, though. Its handler will receive
+		two arguments: the first is the word that was just typed and
+		the second is the active buffer at the time. It also returns
+		differently: it returns the new word and a colour, e.g.
+			return "foo", COLOURS["input"]
+		See README for more details.
+
+0.0.7
+	*	0.0.6 can safely be ignored as not really worth looking at.
+		It has some cool features but there were some issues that
+		weren't looked at that should have been.
+	
+	*	0.0.7, however, kicks ass. See the README at the bottom
+		of the section about the rc file for information about
+		implementing hooks. They're pretty powerful; in fact
+		I develop bfirc using them now, so I can implement
+		completely new features without having to reload the program.
+	
+	*	Probably a bunch of other stuff has been implemented too
+		and probably some new bugs but the hooks stuff really kicks
+		ass.
+	
+	*	The escape sequence handling stuff is shit; I need to take a
+		look at it and figure out what's going on and the best way to
+		do it (as it's obviously been done a million times before),
+		but for now if the keyboard locks out just hit escape and
+		everything should be okay again.
+
+0.0.6
+	*	Fixed up the shit that deals with escape sequences, e.g.
+		C-Del and stuff. It was locking out input before because
+		it wasn't handling them all properly but that seems to be
+		hacketyhacked now. There's still one left that blocks
+		all input and I can't track it down, you can still
+		send a sigterm. Great.
+
+	*	New autocomplete that kicks ass by keeping a cache of
+		long (at the moment >= 7 chars) words you say that'll
+		automatically appear as a preview and you can hit tab
+		if you want to autocomplete to it. Bang fucking bang.
+	
+	*	A couple of things re: appearance; bugs seem to be a bit
+		hard to come by at the moment.
+
+0.0.5
+	*	Someone was bitching because bfirc didn't use the terminal
+		default colours, because he uses gnome-terminal (he's an 
+		asshole, coincedentally), so now it uses the default colours,
+		whatever that means.
+
+	*	I've finally got around to having the rc file as Python code,
+		which means you'll be able to do some pretty cool stuff in the
+		future. While at the moment it doesn't make any difference,
+		I thought it'd be best to make the move now and get it out of
+		the way, since no-one's actually using it yet. ;-)
+
+	*	A very small and largely unnoticeable bug when trying to /quit
+		while disconnected has been fixed.
+
+	*	Someone was bitching about autocomplete not working for /commands,
+		e.g. /q [Tab] -> /quit, so that has been included now also.
+		
+	*	Someone else was going on about how WeeChat has some shit that makes
+		people's names appear in different colours so you can remember
+		who's who easily. I thought it sounded lame but it's included anyway,
+		except it's different to WeeChat in that (apparently) WeeChat uses
+		a completely random way of choosing the colour, whereas bfirc
+		uses a colour generated by hack arithmetic. NICK_COLS=[True|False]
+		in rc file.
+	
+	*	The channel list is now in alphabetical order, instead of the
+		incoherent order of the keys of the dictionary that they're
+		stored in. The channel activity things on the bottom also
+		appear in the same order.
+	
+	*	When you get a PM from someone who you haven't /open'ed, as well as
+		displaying it in the main channel, it now also logs it to the sender's
+		log file, so if/when you do /open them the messages will be there too,
+		which I think helps for continuity, especially when reading back in
+		the logs.
+
+	*	So basically a lot of the hacking I did on this I was high at the time
+		and I forgot what I did, but I did a bunch of refactoring so you
+		I could do some lame log2html thing which isn't in the dist yet,
+		it's pretty shitty anyway. But the input box kicks ass now, all the
+		usual shit's there, including C-left, C-right, C-backspace, C-del
+		and whatever.
+
+	*	You can also change the colours in the rc file and doing a /loadrc
+		will change all the colours on-the-fly (as with all the settings
+		in the rc file). How much ass does that kick? The answer is a lot.
+
+0.0.4
+	*	I've done a bit of work on the input window class to make it a bit
+		more reliable and useable. C-a goes to beginning of line, C-u clears
+		from cursor to beginning of line, del works and backspace works better
+		now if you're backspacing from somewhere other than the end of the
+		line.
+	
+	*	I noticed a rather unfortunate bug in the URL caching code that
+		resulted in a nasty crash because the URL stack wasn't being
+		taken care of properly. That's fixed, and you can now press C-e
+		to get the URL list up.
+
+	*	I'm trying to get it all working as tightly and stable as possible
+		before I start working on the multiple connections branch. So
+		hopefully there will be just one more bugfix release (or if I'm lucky
+		there won't need to be one ;-) before I get to work on the multiple
+		connections. Then, hopefully, once that's done there shouldn't be
+		much more work to do apart from general housekeeping and implementing
+		a few extra features as I think of them.
+
+0.0.3
+	*	Unfortunately the away window was broken if you had more than a
+		screen's worth of away messages but I've fixed it up now. It also
+		truncates away messages to one line to keep it organised, but you
+		can still view them in the context window in full.
+
+	*	Fixed another few bugs and tidied up a little bit, but the main
+		focus is on the away mode fixes. The autocomplete thing doesn't
+		fuck up anymore if you go through the whole cycle repeatedly.
+	
+	*	I also just fixed up the resizing routines. They're still shit,
+		mainly due to Python's tendency to segfault on some necessary
+		curses functions so I've had to take out a few calls, resulting
+		in the redraws looking crap sometimes and needing user input
+		to get them looking normal again (i.e. switch back and forth
+		windows or whatever).
+	
+	*	And as an extra new feature there's the /urls command which
+		pops up a list of the last 10 URLs cached and you hit a number
+		and boom it gets sent to your url_action command (see README)
+	
+	*	Logging is now disabled by default. LOGGING = True in rc file
+		to enable it.
+
+0.0.2
+	*	So a bunch of people were bitching about not having autocomplete,
+		that's in there now, both for /topic and nicks, repeatedly hitting
+		tab cycles through. Channel list is now C-f.
+	
+	*	/loadrc is now "officially supported", stick your settings in and
+		reload them (nick= is ignored).
+	
+	*	/topic now lets you actually set the topic, not just /addtopic
+		to add something to the beginning.
+	
+	*	/url added. bfirc caches the last URL received in a message and
+		calling /url will execute in the shell whatever you want, the
+		example is: url_action=echo %s | xclip
+		Stick that in the rc file. If there's no %s then it's added to the
+		end of the command with a space preceding it, e.g. url_action=echo
+		will do "echo http://foobar.baz/"
+	
+	*	/watchwords lets you add words that make the client react as though
+		a message had your name in it, i.e. highlight it and put it in your
+		away log if /away mode is on.
+
+	*	Numerous bugfixes, generally just forgetting to initialise variables,
+		etc. and a bit of housekeeping - channel list no longer blocks, e.g..
+		Search still blocks so be careful until I fix that.
+
+0.0.1
+	First sort of release, most features are in there except
+	multi connection support which is the big one.

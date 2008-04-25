@@ -1,0 +1,372 @@
+OKAY
+
+Here are some awesome things you should know.
+
+Here are the usual IRC commands that seem to work so far:
+/nick
+/server
+/join #channel1 #channel2
+/part
+/names
+/allnames
+	(full list if /names is bigger than a page)
+/quit [quit message]
+/whois [user]
+/topic
+	No arguments: display the topic in the current channel,
+	any other arguments will change the topic in the current channel.
+	Due to popular demand, typing /topic [Tab] will now stick in the current
+	topic so you can add to it or whatever.
+/ignore
+/ignoreto
+	(both ignore the user AND all messages addressed to him/her
+	and also any joins/parts/quits from the user)
+/msg user message
+/me
+
+And here are the ones that are particular to bfirc:
+	I've listed this one because at the moment you can't set the topic,
+	it just displays it.
+/addtopic  
+	This one you can use to add something to the original topic. e.g.
+	If topic is "hello", /addtopic foo | , the topic will be "foo | hello"
+/url
+	There'll be one (at the moment) URL cached, so every time someone says
+	a URL you can get to it by doing /url and it will execute the command
+	you've specified in your rc file, e.g. url_action=echo %s | xclip
+	Which will put the cached URL onto the X clipboard.
+/urls
+	No longer valid is the above statement, for there are multiple URLs
+	cached. Type /urls (or hit C-e) and see a list of the last 10 URLs,
+	hit a number to send it to url_action.
+/id, /identify
+	These two are just shortcuts to /msg nickserv identify [password]
+/open user
+	Open a PM buffer for a user
+/close
+	Close a PM buffer
+/buddy
+	Add someone to your buddy list and get a notification box if they
+	join/leave a channel you're on.
+/watch
+	Watch a channel and get notifications if someone joins/leaves
+	that channel
+/loadrc
+	Reload the settings in the rc file (except the nick setting)
+/set
+	e.g. /set scroll_topic=no
+	That's all at the moment. Just edit your rc and /loadrc, you lazy fucks.
+/away
+	Basically the most kick ass away mode ever. Any words in your watchwords
+	(see sample rc file) or your nick will trigger highlighting of messages
+	and they'll be stored in the away mode screen so you can press up/down
+	(or j/k) to go through them and see them in context, then pgup/pgdn to
+	scroll through the context.
+/alias
+	Usage: /alias <alias> <command>
+	e.g. /alias who names
+	This will make /who have the same functionality as /names
+	See ALIASES in sample-rc to set this permanently
+
+	
+	Keys:
+
+Tab
+	Autocomplete nicks. I think it works properly. 0.0.5: Now also auto
+	completes /commands, because apparently people think that's useful.
+	0.0.6: Fucking bad ass autocomplete of cached words over a certain
+	length (which is >= 7 chars as of the time of as of this of as written).
+	You'll see a preview, which only means anything if you hit tab, otherwise
+	it's ignored in the final message, no ambiguity like that space bullshit
+	in Open Office.
+C-n
+	Jump to the next active buffer, or go through the buffers if there's
+	no active ones.
+C-p
+	Same as C-n but go the other way through the buffers.
+C-u
+	Clear from cursor to beginning of line in input box.
+C-a
+	Move cursor to beginning of line in input box.
+C-r
+	Enter kick ass backwards search mode (which can be safely interrupted
+	with C-c in case things go a bit crazy). Regex should work, see
+	http://docs.python.org/lib/re-syntax.html for reference on Python's
+	regex.
+C-f
+	Pop up the channel list.
+C-e
+	Show URL list (see /urls above).
+PgUp/PgDn
+	Indeed, scrolling, and it goes back through your logs too, because
+	it's magic.
+C-Left/C-Right
+	Jump back/forward a word.
+C-Backspace/C-Delete
+	Delete a word backward or forward
+Up/Down
+	Go back and forth in the input buffer. I noticed irssi has a
+	per-channel input buffer, which I think is pretty shit,
+	so bfirc doesn't have that.
+
+And finally, a step-by-step on the sample-rc you should've got in the
+tarball. Note that this is all real, genuine Python code as of 0.0.5.
+Firstly, some brief, essential notes on Python syntax:
+
+	*	All strings are enclosed in quotes, either like this:
+			foo = 'foo'
+		or this:
+			bar = "bar"
+	
+	*	Any parameter that has multiple values, e.g. the autojoin list,
+		are a Python list object, and look like this:
+			foo = ['one', 'two', "three", "four", 'five']
+	
+	*	Numbers are expressed without any quotes, like this:
+			foo = 10
+	
+	*	Boolean variables, i.e. those that are either true or false,
+		are set thus:
+			foo = True
+			bar = False
+
+		The capitalisation of True and False is important.
+
+	*	That's basically all you need to know. I've tried to make the
+		sample as comprehensive as possible, contact me if you fuck it up.
+
+LOG_ID =
+	This is the subdirectory that any bfirc sessions loaded with this rc file
+	will use to store your logs, regardless of nick changes.
+	So if you enter "foo", your logs will all be saved in ~/.bfirc/logs/foo/
+LOGS_DIR =
+	Set this to be the base dir for logs, e.g. ~/.bfirc/logs/
+LOGGING =
+	Set to True or False to enable/disable logging, default is False.
+IGNORE_TO =, IGNORE =
+	Put a list (all lists are separated by commas) of people you want to
+	ignore here, /ignoreto is mentioned above.
+BUDDY_LIST =
+	Again, a comma separated list of people to whom you want to be alerted
+	when they join/leave a channel you're in.
+WATCH_LIST =
+	A list of channels you want to keep an eye on; you'll receive a
+	notification when someone joins/leaves one of these channels.
+AUTOJOIN_LIST =
+	Join these channels automatically when you connect.
+SERVER =
+	The server to connect to on startup.
+PORT =
+	Connect on this port (default 6667).
+NICK =
+	Your nick.
+REALNAME =
+	Your real name (e.g. John Smith)
+PASS =
+	Your password (not encrypted, so stash it somewhere safe).
+SCROLL_TOPIC =
+	Set to True or False to enable/disable fancy scrolling topic.
+SHOW_EVENTS =
+	Set to True or False to enable/disable join/part/quit notifications
+	in the info bar.
+WATCHWORDS =
+	A list of words that you want to be highlighted when people say them.
+	Words in this list will also be sent to your away window so you can
+	read the messages later (if away mode is on). You can put regex in
+	too. See http://docs.python.org/lib/re-syntax.html for reference.
+NICK_COLS =
+	Set to True or False to enable/disable colourisation of nicks based
+	on a checksum type thing on the ordinal values of the characters
+	in the nick. Apparently this makes it easier to follow conversations.
+ALIASES =
+	This is a dictionary for the aliases you want to use, e.g.:
+	ALIASES = {
+		'who' : 'names',
+		'q' : 'quit'
+	}
+SYS_COLOURS =
+	This is a dictionary of colours and it's nice and simple. First off,
+	it should all be case insensitive so don't worry about that, but
+	here are the valid colours:
+	BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, DEFAULT
+
+	Now in the dictionary there are all the different "classes", so if you've
+	got, e.g. "plain", it's set to "DEFAULT" (which is the default colour
+	set by the terminal emulator you're running).
+
+	If you want to change that, you'd have:
+	"plain" : "BLUE",
+	Or, if you want a background colour too:
+	"plain" : ("BLUE", "WHITE"),
+	
+	Note that the parentheses are important; it won't work without them.
+	And don't forget the comma at the end of the line, it's equally important.
+	That's as complicated as the syntax gets, you should be able to figure
+	it out from the example. I've also included an example for some pretty
+	cool colours I'm using at the moment, in case you have no imagination.
+INPUT_HOOKS = 
+	This list allows you to place a hook on any command, e.g. /say (the default),
+	/msg, /open, /join, etc., etc.. You can override the command or just
+	alter the data that is sent to it. The syntax is this:
+	INPUT_HOOKS = [
+		(command, function),
+		(command2, function2)
+	]
+	Your functions are defined as normal Python functions within your rc file
+	and they should be defined to accept these parameters:
+
+	def function( con, buf, cmd, args )
+
+	con is the connection to which the command is relevant (if there is one,
+	although at the moment there is only one connection anyway),
+
+	buf is the current buffer, e.g. "#bfirc"
+
+	cmd is the command itself. If you change this then you can effectively
+	override the command.
+
+	args are the arguments passed to the command, e.g. /msg bobf hello there!
+	will send a list thus to args: [ "bobf", "hello", "there!" ]
+
+	It is ESSENTIAL that any hook returns these arguments back to the main
+	program, so you should have this as the last line in your function:
+
+	return con, buf, cmd, args
+
+	*** IMPORTANT: As of 0.0.8 I added a new input hook called "word".
+	Here's how it works:
+		INPUT_HOOKS = [ ..., ..., ("word", on_word) ]
+
+		def on_word( word, buffer ):
+			if buffer == "#whatever" and word == "hello":
+				word = "Hello, everyone!"
+
+			return word, None
+
+	So you can use it to automatically replace words as you type, if you like.
+	Perhaps a more useful use is a spellchecker. I hacked something together
+	with the aspell-python module:
+	http://www.wmula.republika.pl/proj/aspell-python/index.html
+	and it works pretty well. The second return argument for this handler
+	is the colour to display the word in, so you can check if the word's
+	in a dictionary and, if it isn't, display it in red, otherwise display it in
+	the normal colour. Here's the code from my rc file:
+
+	def spell_check( s, buf ):
+		if not s.isalpha():
+			return s, None 
+
+		lang = None
+		if buf == "#casimir":
+			lang = "fr"
+			
+		try:
+			import aspell
+			if lang:
+				sp = aspell.Speller( "lang", lang )
+			else:
+				sp = aspell.Speller()
+
+		except ImportError:
+			raise_error( "Could not load aspell-python module, get it here: http://www.wmula.republika.pl/proj/aspell-python/index.html" )
+			sp = None
+
+		if not sp:
+			return s, None
+
+		c = sp.check( s )
+		if c:
+			return s, None
+
+		return s, COLOURS["offline"]
+
+
+	So there you go. If you write any hooks for bfirc please do email
+	them to me so I can put them on the website and save myself from
+	having to document the scripting thing any more than I have done
+	here. :-)
+
+OUTPUT_HOOKS =
+	This list works similarly to INPUT_HOOKS except that it allows you to
+	process events coming from the server and manipulate them. The syntax
+	for the list is the same, e.g.:
+	
+	OUTPUT_HOOKS = [
+		("privmsg", on_privmsg),
+		("pubmsg", on_pubmsg)
+	]
+
+	But the function definitions are different. Instead the functions should
+	be defined like this:
+
+	def function( con, evt )
+
+	con is the current connection.
+
+	evt is an object with the following members:
+		event_type
+		source
+		target
+		arguments
+	
+	So a privmsg event from "foo" to "bar" saying "hello there!" will be:
+		event_type == "privmsg"
+		source == "foo"
+		target == "bar"
+		arguments == [ "hello", "there!" ]
+
+	Probably the best way to learn is to just play around with it. All of
+	this happens inside a try/except clause so if you break something
+	you should get a nice traceback inside the program that lets you
+	deal with it. This is currently how I'm developing bfirc, by implementing
+	new features in my rc file and merging them, meaning I don't have
+	to reload the client to test them.
+
+	Regarding hooks, you should be aware of the following:
+		"buffers" is a global variable of type dict. So buffers[ "#bfirc" ]
+		will be the buffer object for #bfirc. At the moment I recommend
+		looking at the source to see what you can do with it.
+
+		irc_process_command() is probably the most useful function here.
+		You can access it from any hook and it is defined like so:
+
+		def irc_process_command( connection, command, args ):
+
+		e.g. irc_process_command( con, "say", ["hello", "everybody!"] )
+
+		You can also use:
+			irc_process_command( con, "say", "hello everybody!" )
+		And it'll convert the args into a list for you.
+
+	I'll try to put up a few example hooks on the webpage as examples.
+
+	Roadmap
+
+Multiconnection support is the main missing feature at the moment.
+Personally I don't use multiconnections so it's not such a big deal
+for me but it's still a priority to have it as a feature.
+
+A big problem at the moment is the resizing. I can't get it to work right.
+It either resizes but looks like shit and half the windows are all on top
+of each other, or it (probably) works properly, except Python segfaults.
+Hopefully I'll get to the bottom of that one.
+
+Need to do some housekeeping re: processing all the currently unprocessed
+IRC server messages; stuff like "You aren't an operator", "Nick not found",
+etc. etc..
+
+Numerous bugfixes, no doubt.
+
+
+	Contact
+
+Email me at robertanthonyfarrell at googlemail dot com
+Or join #bfirc on irc.freenode.net
+
+Copyright (c) 2008 Bob Farrell
+
+Thanks to Joel Rosdahl for the Python IRC lib.
+It's nice and low level so I haven't been held back by it
+but it's also done the boring shit for me and deals with
+all the sockets probably better than if I'd done it myself.
+Check the header for birclib.py (slightly modified version).
