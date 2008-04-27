@@ -1709,7 +1709,10 @@ def irc_process_command (connection, command, args):
 
 	try:
 		if command == "server":
-			SERVER = args[0]
+			if not args:
+				system_write("Currently connected to: " + connection.server + "")
+				return
+			connection.server = args[0]
 			if len(args) >= 2: connection.port = args[1]
 			#connection.connect(SERVER, PORT, NICK, ircname=REALNAME)
 			connection.connect(connection.server, connection.port, NICK, ircname=REALNAME)
