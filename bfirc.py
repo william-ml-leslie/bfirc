@@ -39,7 +39,7 @@ import locale
 
 #from dump import DEBUG
 
-locale.setlocale( locale.LC_ALL, '' )
+#locale.setlocale( locale.LC_ALL, '' )
 # HAI WELCOME TO MY INTERNET PROGRAM!!
 
 
