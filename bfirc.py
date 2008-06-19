@@ -1354,7 +1354,7 @@ def _on_join (connection, event):
     if not is_ignored( src ) and src.lower() != NICK.lower():
         buffers[targ].write( mk_full_nick( event.source() ), "", event.eventtype())
 
-    if src[0] in ["@", "+"]: src = src[1:]
+    if src[0] in ["@", "+", "%", "~"]: src = src[1:]
 
     if src.lower() != NICK.lower():
         buffers[targ].nicklist.insert(0, src)
