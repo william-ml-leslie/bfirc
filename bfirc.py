@@ -1707,6 +1707,9 @@ def irc_process_command (connection, command, args):
         if command == "quit" and not connection.connected:
             command = "_quit"
 
+        elif command == "disconnect" and not connection.connected:
+            command = "null"
+
     try:
         if command == "server":
             if not args:
@@ -1903,6 +1906,12 @@ def irc_process_command (connection, command, args):
                 connections[ k ].disconnect()
             exit_program()
 
+        elif command == "disconnect":
+            if not args:
+                args = [QUIT_MESSAGE]
+            connection.quit(" ".join(args))
+            connection.disconnect()
+
         elif command == "_quit":
             exit_program() 
 
@@ -1990,6 +1999,9 @@ def irc_process_command (connection, command, args):
 
         elif command == "away":
             set_away()
+
+        elif command == "null":
+            pass
 
         else:
             if command and not override:
