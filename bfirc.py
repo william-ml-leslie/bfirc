@@ -1841,7 +1841,8 @@ def irc_process_command (connection, command, args):
             irc_add_topic( connection, buf, " ".join(args) )
 
         elif command == "nick":
-            connection.nick(args[0])
+            if args:
+                connection.nick(args[0])
                 
         elif command == "topic":
             if not args and birclib.is_channel(buf):
