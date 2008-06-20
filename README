@@ -11,7 +11,7 @@ Here are the usual IRC commands that seem to work so far:
 /disconnect
 	Disconnects from the current server
 /join #channel1 #channel2
-        Join a channel
+	Join a channel
 /part
 	Parts from a channel
 /names
@@ -19,9 +19,9 @@ Here are the usual IRC commands that seem to work so far:
 /allnames
 	(full list if /names is bigger than a page)
 /quit [quit message]
-      	Quit bfirc with optional quit message.
+	Quit bfirc with optional quit message.
 /whois [user]
-        Get WHOIS information for user
+	Get WHOIS information for user
 /topic
 	No arguments: display the topic in the current channel,
 	any other arguments will change the topic in the current channel.
@@ -32,7 +32,7 @@ Here are the usual IRC commands that seem to work so far:
 	(both ignore the user AND all messages addressed to him/her
 	and also any joins/parts/quits from the user)
 /msg user message
-        Send a private message to user
+	Send a private message to user
 /me
 	Perform an action
 
@@ -344,7 +344,7 @@ OUTPUT_HOOKS =
 
 	I'll try to put up a few example hooks on the webpage as examples.
 
-	Roadmap
+Roadmap
 
 A big problem at the moment is the resizing. I can't get it to work right.
 It either resizes but looks horrible and half the windows are all on top
@@ -357,7 +357,7 @@ etc. etc..
 
 Numerous bugfixes, no doubt.
 
-	Contact
+Contact
 
 Email me at robertanthonyfarrell at googlemail dot com
 Or join #bfirc on irc.freenode.net
