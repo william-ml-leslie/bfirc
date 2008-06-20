@@ -1438,7 +1438,7 @@ def _on_quit (connection, event):
 def _on_namreply (connection, event):
     nam_list = event.arguments()[2].split(" ")[:-1]
     for i in range(0, len(nam_list)):
-        if nam_list[i][0] in ["@", "+"]: nam_list[i] = nam_list[i][1:]
+        if nam_list[i][0] in ["@", "+", "%", "~"]: nam_list[i] = nam_list[i][1:]
 
     buffers[ event.arguments()[1].lower() ].nicklist += nam_list
  
