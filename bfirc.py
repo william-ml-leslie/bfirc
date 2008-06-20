@@ -1243,7 +1243,9 @@ class MessageWindow( InputWindow ):#irc_window ):
 def _on_connect (connection, event):
     global TIMER_QUEUE
 
-    con_switch( connections.keys()[ connections.values().index( connection ) ] )
+    connection_name = connections.keys()[connections.values().index(connection)]
+
+    con_switch(connection_name)
 
     connection.notified = False
     if connection.attempts:
@@ -1255,7 +1257,7 @@ def _on_connect (connection, event):
     if PASS:
         irc_process_command(connection, "whois", ["nickserv"])
 
-    if len(AUTOJOIN_LIST):
+    if connection_name in AUTOJOIN_LIST.keys() and len(AUTOJOIN_LIST[connection_name]):
         connection.need_autojoin = True
     
     if not connection.live:
@@ -1575,9 +1577,9 @@ def _on_umode( connection, event ):
     if targ == src:
         targ = ''
 
-    if event.target().lower() == NICK.lower() and event.arguments()[0] == '+e' and connection.need_autojoin:
+    if event.target().lower() == NICK.lower() and connection.need_autojoin:
         connection.need_autojoin = False
-        irc_process_command(connection, "join", AUTOJOIN_LIST)
+        irc_process_command(connection, "join", AUTOJOIN_LIST[connections.keys()[connections.values().index(connection)]])
     system_write( '' + src + ' sets umode [' + event.arguments()[0] + ']' + targ, MAIN_WINDOW_NAME )
     
 def debug_event (connection, event):
@@ -1669,7 +1671,7 @@ def irc_process_command (connection, command, args):
     global NICK
     global REALNAME
     global PORT
-    global SERVER
+    global SERVERS
     global PING_TIME
     global SHOW_URL_LIST
 
@@ -2249,7 +2251,7 @@ def load_rc (path=None, ft=True):
     global _INPUT_HOOKS
     global OUTPUT_HOOKS
     global _OUTPUT_HOOKS
-    global SERVER, PORT, NICK, REALNAME, PASS, LOG_ID, \
+    global SERVERS, PORT, NICK, REALNAME, PASS, LOG_ID, \
             SCROLL_TOPIC, AUTO_REJOIN, URL_ACTION, \
             AUTOJOIN_LIST, BUDDY_LIST, IGNORE, \
             IGNORE_TO, QUIT_MESSAGE, WATCH_LIST, \
@@ -3335,22 +3337,31 @@ def main (scr):
     except:
         path = None
 
+    connections[0] = irc.server()
+    connections[0].live = False
+    connections[0].attempts = 0
+    connections[0].need_autojoin = False
+
     rc_file = load_rc(path)
 
     buffers[MAIN_WINDOW_NAME].scroll( buffers[MAIN_WINDOW_NAME].h )
     buffers[MAIN_WINDOW_NAME].scroll_to( 0 )
     
     buffers[MAIN_WINDOW_NAME].write_time()
-    irc_topic_change( buffers[MAIN_WINDOW_NAME], " " + PROGRAM_NAME + ": " + SERVER )
+    irc_topic_change( buffers[MAIN_WINDOW_NAME], " " + PROGRAM_NAME + ": " + SERVERS[0] )
 
     set_handlers()
 
-    if SERVER:
+    if SERVERS:
         try:
-            key = ".".join( SERVER.split('.')[-2:] )
-            connections[ key ] = connections.pop( 0 ) 
-            connections[ key ].connect(SERVER, PORT, NICK, ircname=REALNAME)
-            current_con = key
+            connections.pop(0)
+            for server in SERVERS:
+                connections[server] = irc.server()
+                connections[server].live = False
+                connections[server].attempts = 0
+                connections[server].need_autojoin = False
+                connections[server].connect(server, PORT, NICK, ircname=REALNAME)
+            current_con = SERVERS[0]
         except birclib.ServerConnectionError, x:
             print x
             sys.exit(1)
@@ -3413,10 +3424,6 @@ def main (scr):
             elif len(line): irc_process_command( buffers[current_buffer].con, "say", line.split(" "))
 
 
-connections[0] = irc.server()
-connections[0].live = False
-connections[0].attempts = 0
-connections[0].need_autojoin = False
 
 
 signal.signal(signal.SIGWINCH, sigwinch)
