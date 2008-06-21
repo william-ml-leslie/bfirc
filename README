@@ -157,9 +157,12 @@ WATCH_LIST =
 	A list of channels you want to keep an eye on; you'll receive a
 	notification when someone joins/leaves one of these channels.
 AUTOJOIN_LIST =
-	Join these channels automatically when you connect.
+	A dictionary of the format:
+	{"server1": ["#channel1", "#channel2"], "server2": ["#channel3"]}
+	Join these channels automatically when you connect. Note that if a server
+	isn't present in this list, nothing should go wrong.
 SERVER =
-	The server to connect to on startup.
+	A list of the servers to connect to on startup.
 PORT =
 	Connect on this port (default 6667).
 NICK =
