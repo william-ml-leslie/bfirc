@@ -15,7 +15,7 @@ IGNORE = []
 IGNORE_TO = []
 BUDDY_LIST = []
 WATCH_LIST = []
-AUTOJOIN_LIST = []
+AUTOJOIN_LIST = {}
 WATCHWORDS = []
 HIGHLIGHTS = {}
 
@@ -53,7 +53,7 @@ if not os.access( RC_PATH, os.F_OK ):
 
 NICK = "bfirc-user"
 REALNAME = NICK
-SERVER = ""
+SERVERS = []
 PORT = 6667
 PASS = ""
 
