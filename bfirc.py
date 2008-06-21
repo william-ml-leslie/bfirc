@@ -1354,7 +1354,7 @@ def _on_join (connection, event):
     if not is_ignored( src ) and src.lower() != NICK.lower():
         buffers[targ].write( mk_full_nick( event.source() ), "", event.eventtype())
 
-    if src[0] in ["@", "+"]: src = src[1:]
+    if src[0] in ["@", "+", "%", "~"]: src = src[1:]
 
     if src.lower() != NICK.lower():
         buffers[targ].nicklist.insert(0, src)
@@ -1438,7 +1438,7 @@ def _on_quit (connection, event):
 def _on_namreply (connection, event):
     nam_list = event.arguments()[2].split(" ")[:-1]
     for i in range(0, len(nam_list)):
-        if nam_list[i][0] in ["@", "+"]: nam_list[i] = nam_list[i][1:]
+        if nam_list[i][0] in ["@", "+", "%", "~"]: nam_list[i] = nam_list[i][1:]
 
     buffers[ event.arguments()[1].lower() ].nicklist += nam_list
  
@@ -1707,6 +1707,9 @@ def irc_process_command (connection, command, args):
         if command == "quit" and not connection.connected:
             command = "_quit"
 
+        elif command == "disconnect" and not connection.connected:
+            command = "null"
+
     try:
         if command == "server":
             if not args:
@@ -1838,7 +1841,8 @@ def irc_process_command (connection, command, args):
             irc_add_topic( connection, buf, " ".join(args) )
 
         elif command == "nick":
-            connection.nick(args[0])
+            if args:
+                connection.nick(args[0])
                 
         elif command == "topic":
             if not args and birclib.is_channel(buf):
@@ -1902,6 +1906,12 @@ def irc_process_command (connection, command, args):
                 connections[ k ].quit( " ".join(args) )
                 connections[ k ].disconnect()
             exit_program()
+
+        elif command == "disconnect":
+            if not args:
+                args = [QUIT_MESSAGE]
+            connection.quit(" ".join(args))
+            connection.disconnect()
 
         elif command == "_quit":
             exit_program() 
@@ -1990,6 +2000,9 @@ def irc_process_command (connection, command, args):
 
         elif command == "away":
             set_away()
+
+        elif command == "null":
+            pass
 
         else:
             if command and not override:

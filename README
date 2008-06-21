@@ -1,17 +1,27 @@
-OKAY
-
-Here are some awesome things you should know.
+Commands
 
 Here are the usual IRC commands that seem to work so far:
-/nick
-/server
+
+/nick nickname
+	Changes your current IRC nick to `nickname'
+/server server
+	Disconnects from the current server and connects to `server'
+/connect server
+	Connects to `server'
+/disconnect
+	Disconnects from the current server
 /join #channel1 #channel2
+	Join a channel
 /part
+	Parts from a channel
 /names
+	Get a list of people in the current channel
 /allnames
 	(full list if /names is bigger than a page)
 /quit [quit message]
+	Quit bfirc with optional quit message.
 /whois [user]
+	Get WHOIS information for user
 /topic
 	No arguments: display the topic in the current channel,
 	any other arguments will change the topic in the current channel.
@@ -22,11 +32,11 @@ Here are the usual IRC commands that seem to work so far:
 	(both ignore the user AND all messages addressed to him/her
 	and also any joins/parts/quits from the user)
 /msg user message
+	Send a private message to user
 /me
+	Perform an action
 
 And here are the ones that are particular to bfirc:
-	I've listed this one because at the moment you can't set the topic,
-	it just displays it.
 /addtopic  
 	This one you can use to add something to the original topic. e.g.
 	If topic is "hello", /addtopic foo | , the topic will be "foo | hello"
@@ -55,7 +65,6 @@ And here are the ones that are particular to bfirc:
 	Reload the settings in the rc file (except the nick setting)
 /set
 	e.g. /set scroll_topic=no
-	That's all at the moment. Just edit your rc and /loadrc, you lazy fucks.
 /away
 	Basically the most kick ass away mode ever. Any words in your watchwords
 	(see sample rc file) or your nick will trigger highlighting of messages
@@ -67,21 +76,19 @@ And here are the ones that are particular to bfirc:
 	e.g. /alias who names
 	This will make /who have the same functionality as /names
 	See ALIASES in sample-rc to set this permanently
-
 	
-	Keys:
+Keys
 
 Tab
 	Autocomplete nicks. I think it works properly. 0.0.5: Now also auto
 	completes /commands, because apparently people think that's useful.
-	0.0.6: Fucking bad ass autocomplete of cached words over a certain
-	length (which is >= 7 chars as of the time of as of this of as written).
+	0.0.6: Autocomplete of cached words over a certain length (which is >= 7
+	chars as of the time of as of this of as written).
 	You'll see a preview, which only means anything if you hit tab, otherwise
-	it's ignored in the final message, no ambiguity like that space bullshit
-	in Open Office.
+	it's ignored in the final message
 C-n
-	Jump to the next active buffer, or go through the buffers if there's
-	no active ones.
+	Jump to the next active buffer (starting at the left of the list), or go
+	through the buffers if there's no active ones.
 C-p
 	Same as C-n but go the other way through the buffers.
 C-u
@@ -94,7 +101,8 @@ C-r
 	http://docs.python.org/lib/re-syntax.html for reference on Python's
 	regex.
 C-f
-	Pop up the channel list.
+	Pop up the channel list. You may select a channel by pressing the
+	corresponding number.
 C-e
 	Show URL list (see /urls above).
 PgUp/PgDn
@@ -105,9 +113,8 @@ C-Left/C-Right
 C-Backspace/C-Delete
 	Delete a word backward or forward
 Up/Down
-	Go back and forth in the input buffer. I noticed irssi has a
-	per-channel input buffer, which I think is pretty shit,
-	so bfirc doesn't have that.
+	Go back and forth in the input buffer. Unlike irssi, which has a
+	per-channel input buffer, bfirc has a global input buffer.
 
 And finally, a step-by-step on the sample-rc you should've got in the
 tarball. Note that this is all real, genuine Python code as of 0.0.5.
@@ -131,9 +138,6 @@ Firstly, some brief, essential notes on Python syntax:
 			bar = False
 
 		The capitalisation of True and False is important.
-
-	*	That's basically all you need to know. I've tried to make the
-		sample as comprehensive as possible, contact me if you fuck it up.
 
 LOG_ID =
 	This is the subdirectory that any bfirc sessions loaded with this rc file
@@ -340,14 +344,10 @@ OUTPUT_HOOKS =
 
 	I'll try to put up a few example hooks on the webpage as examples.
 
-	Roadmap
-
-Multiconnection support is the main missing feature at the moment.
-Personally I don't use multiconnections so it's not such a big deal
-for me but it's still a priority to have it as a feature.
+Roadmap
 
 A big problem at the moment is the resizing. I can't get it to work right.
-It either resizes but looks like shit and half the windows are all on top
+It either resizes but looks horrible and half the windows are all on top
 of each other, or it (probably) works properly, except Python segfaults.
 Hopefully I'll get to the bottom of that one.
 
@@ -357,8 +357,7 @@ etc. etc..
 
 Numerous bugfixes, no doubt.
 
-
-	Contact
+Contact
 
 Email me at robertanthonyfarrell at googlemail dot com
 Or join #bfirc on irc.freenode.net
