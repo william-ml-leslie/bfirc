@@ -45,7 +45,7 @@ def format_string( src, string, event_type, events=None ):
 	return (msg_from, attribs, string)
 
 def escape_string( string ):
-	escape = "[]()*"
+	escape = r"\[]()*"
 	for e in escape:
 		 if e in string:
 				string = string.replace(e, str('\\'+e)  )

@@ -946,7 +946,7 @@ class InputWindow ( irc_window ):
         if not len( self.s ): return None
         if self.window.getyx()[ 1 ] == 0: return None
 
-        if not self.ts and not self.s[ -self.cpos -1 ].isalnum() and self.s[ -self.cpos -1 ] not in "[]{}^_|/":
+        if not self.ts and not self.s[ -self.cpos -1 ].isalnum() and self.s[ -self.cpos -1 ] not in "[]{}^_|/\\":
             return None
 
         self.autocomp = False
@@ -3348,7 +3348,8 @@ def main (scr):
     buffers[MAIN_WINDOW_NAME].scroll_to( 0 )
     
     buffers[MAIN_WINDOW_NAME].write_time()
-    irc_topic_change( buffers[MAIN_WINDOW_NAME], " " + PROGRAM_NAME + ": " + SERVERS[0] )
+    if SERVERS:
+        irc_topic_change( buffers[MAIN_WINDOW_NAME], " " + PROGRAM_NAME + ": " + SERVERS[0] )
 
     set_handlers()
 
