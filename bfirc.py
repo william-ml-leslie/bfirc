@@ -1803,9 +1803,7 @@ def irc_process_command (connection, command, args):
                 cmd = URL_ACTION % URL
                 
             r = os.system( cmd )
-            if not r:
-                system_write("System command: " + cmd + " successful.")
-            else:
+            if r:
                 system_write("System command " + cmd + " returned: Error " + str( r ) + "")
 
         elif command == "urls":
