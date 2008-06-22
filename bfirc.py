@@ -2318,7 +2318,7 @@ def exit_program ():
     for key in buffers.keys():
         buffers[key].stop_logging()
     curses.endwin()
-    print "Bye!"
+#    print "Bye!"
     sys.exit(0)
 
 def update_info (buffer=None):
@@ -3341,16 +3341,16 @@ def main (scr):
     connections[0].need_autojoin = False
 
     rc_file = load_rc(path)
+    
+    set_handlers()
 
     buffers[MAIN_WINDOW_NAME].scroll( buffers[MAIN_WINDOW_NAME].h )
     buffers[MAIN_WINDOW_NAME].scroll_to( 0 )
     
     buffers[MAIN_WINDOW_NAME].write_time()
-    irc_topic_change( buffers[MAIN_WINDOW_NAME], " " + PROGRAM_NAME + ": " + SERVERS[0] )
-
-    set_handlers()
 
     if SERVERS:
+        irc_topic_change( buffers[MAIN_WINDOW_NAME], " " + PROGRAM_NAME + ": " + SERVERS[0] )
         try:
             connections.pop(0)
             for server in SERVERS:
