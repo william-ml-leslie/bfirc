@@ -1403,7 +1403,7 @@ def _on_kick (connection, event):
     if not is_ignored( src ):
         buffers[chan].write( targ, src, event.eventtype())
 
-    if targ.lower() in buffer[chan].nicklist:
+    if targ.lower() in buffers[chan].nicklist:
         buffers[chan].nicklist.pop( buffers[chan].nicklist.index(targ.lower()) )
 
     if birclib.nm_to_n(targ).lower() == NICK.lower():
