@@ -3367,10 +3367,10 @@ def main (scr):
             print x
             sys.exit(1)
             
-    buffer_switch()
     t = time.localtime()
     PING_TIME = time.time()
     scr.timeout( 307 )
+    initial_redraw = True
 
     while True:
         if not AWAY:
@@ -3389,6 +3389,10 @@ def main (scr):
 
             try: c = scr.getkey()
             except: c = None    
+
+            if initial_redraw:
+                buffer_switch()
+                initial_redraw = False
 
             irc.process_once()
             
