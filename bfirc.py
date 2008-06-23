@@ -946,7 +946,7 @@ class InputWindow ( irc_window ):
         if not len( self.s ): return None
         if self.window.getyx()[ 1 ] == 0: return None
 
-        if not self.ts and not self.s[ -self.cpos -1 ].isalnum() and self.s[ -self.cpos -1 ] not in "[]{}^_|/":
+        if not self.ts and not self.s[ -self.cpos -1 ].isalnum() and self.s[ -self.cpos -1 ] not in "[]{}^_|/\\":
             return None
 
         self.autocomp = False
