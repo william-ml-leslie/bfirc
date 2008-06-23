@@ -1403,7 +1403,8 @@ def _on_kick (connection, event):
     if not is_ignored( src ):
         buffers[chan].write( targ, src, event.eventtype())
 
-    buffers[chan].nicklist.pop( buffers[chan].nicklist.index(targ.lower()) )
+    if targ.lower() in buffer[chan].nicklist:
+        buffers[chan].nicklist.pop( buffers[chan].nicklist.index(targ.lower()) )
 
     if birclib.nm_to_n(targ).lower() == NICK.lower():
         buffers[chan].has_unread = False
@@ -3390,12 +3391,12 @@ def main (scr):
             try: c = scr.getkey()
             except: c = None    
 
-            if initial_redraw:
-                buffer_switch()
-                initial_redraw = False
 
             irc.process_once()
             
+            if initial_redraw:
+                buffer_switch()
+                initial_redraw = False
             if c:
                 result = process_input(input_win, c, input_win.s)
 
