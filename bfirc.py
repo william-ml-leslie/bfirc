@@ -1994,6 +1994,8 @@ def irc_process_command (connection, command, args):
             buffers[buf].write(NICK, text, "me_action")
 
         elif command in  ["id", "identify"]:
+            if not args:
+                args.append(PASS)
             connection.privmsg("nickserv", "identify " + args[0])
 
         elif command == "set":
