@@ -169,8 +169,9 @@ NICK =
 	Your nick.
 REALNAME =
 	Your real name (e.g. John Smith)
-PASS =
-	Your password (not encrypted, so stash it somewhere safe).
+PASS_LIST =
+	A dictionary of your passwords (similar format to AUTOJOIN_LIST)
+	Your passwords are not encrypted, so stash them somewhere safe.
 SCROLL_TOPIC =
 	Set to True or False to enable/disable fancy scrolling topic.
 SHOW_EVENTS =

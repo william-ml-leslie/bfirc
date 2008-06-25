@@ -55,7 +55,7 @@ NICK = "bfirc-user"
 REALNAME = NICK
 SERVERS = []
 PORT = 6667
-PASS = ""
+PASS_LIST = {}
 
 EXT_HOOKS = []
 INPUT_HOOKS = []
