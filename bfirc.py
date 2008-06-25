@@ -1293,6 +1293,9 @@ def _on_pubmsg (connection, event):
 def _on_action (connection, event):
     _on_privmsg (connection, event)
 
+def _on_servicesmsg( connection, event ):
+    event._arguments = [" ".join(event._arguments)]
+    _on_privmsg (connection, event)
 
 def _on_privnotice(connection, event):
     if len( event.arguments() ) < 2:
@@ -3238,6 +3241,7 @@ def set_handlers():
         "endofnames" : _on_endofnames,
         "privmsg" : _on_privmsg,
         "pubmsg" : _on_pubmsg,
+        "901" : _on_servicesmsg,
         "privnotice" : _on_privnotice,
         "pubnotice" : _on_pubnotice,
         "action" : _on_action,
