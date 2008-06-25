@@ -1648,15 +1648,15 @@ def compile_whois (args, type, connection):
         if not len( w.user ):
             return    
         if w.user[0] == "NickServ":
-            if w.user[1] == "NickServ" and w.user[2] == "services." and w.user[4] == "Nickname Services":
-                system_write( "Sending password. NickServ authenticated as:" )
-                irc_process_command(connection, "id", [PASS])
+#            if w.user[1] == "NickServ" and w.user[2] == "services." and w.user[4] == "Nickname Services":
+            system_write( "Sending password. NickServ authenticated as:" )
+            irc_process_command(connection, "id", [PASS_LIST[connections.keys()[connections.values().index(connection)]]])
 #                if connection.need_autojoin:
 #                    irc_process_command(connection, "join", AUTOJOIN_LIST)
 #                    connection.need_autojoin = False
-            else:
-                system_write( "NickServ could not be authenticated. Not sending password." )
-                return False
+#            else:
+#                system_write( "NickServ could not be authenticated. Not sending password." )
+#                return False
         f("\n    Whois     :" + w.user[0] + " [" + w.user[1] + "@" + w.user[2] + "]", a, no_refresh=True)
         f("\n    IRC Name  :" + w.user[4], a, no_refresh=True)
         if w.channels:
