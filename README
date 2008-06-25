@@ -86,6 +86,8 @@ Tab
 	chars as of the time of as of this of as written).
 	You'll see a preview, which only means anything if you hit tab, otherwise
 	it's ignored in the final message
+C-w
+    Clear channel notifications from bottom of the screen.
 C-n
 	Jump to the next active buffer (starting at the left of the list), or go
 	through the buffers if there's no active ones.
