@@ -1679,8 +1679,6 @@ def irc_process_command (connection, command, args):
     global PING_TIME
     global SHOW_URL_LIST
     
-    connection_name = connections.keys()[connections.values().index(connection)]
-
     if command in ALIASES:
         command = ALIASES[ command ]
 
@@ -2000,7 +1998,7 @@ def irc_process_command (connection, command, args):
 
         elif command in  ["id", "identify"]:
             if not args:
-                args.append(PASS_LIST[connection_name])
+                args.append(PASS_LIST[connections.keys()[connections.values().index(connection)]])
             connection.privmsg("nickserv", "identify " + args[0])
 
         elif command == "set":
