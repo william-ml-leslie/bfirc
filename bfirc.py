@@ -1663,7 +1663,7 @@ def compile_whois (args, type, connection):
             f("\n    Channels  :" + ":".join(w.channels[0].split(" ")), a, no_refresh=True)
         if w.server:
             if len(w.server) == 2: server = w.server[1]
-        f("\n    Server    :" + w.server[0] + " [" + (server or "") + "]", a, no_refresh=True)
+            f("\n    Server    :" + w.server[0] + " [" + (server or "") + "]", a, no_refresh=True)
 
         f("\nEnd of Whois", a)
 
