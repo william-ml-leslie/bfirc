@@ -1243,9 +1243,7 @@ class MessageWindow( InputWindow ):#irc_window ):
 def _on_connect (connection, event):
     global TIMER_QUEUE
 
-    connection_name = connections.keys()[connections.values().index(connection)]
-
-    con_switch(connection_name)
+    con_switch(connection.server)
 
     connection.notified = False
     if connection.attempts:
@@ -1254,10 +1252,10 @@ def _on_connect (connection, event):
 
     ping_server( connection )
 
-    if PASS_LIST[connection_name]:
+    if PASS_LIST[connection.server]:
         irc_process_command(connection, "whois", ["nickserv"])
 
-    if connection_name in AUTOJOIN_LIST.keys() and len(AUTOJOIN_LIST[connection_name]):
+    if connection.server in AUTOJOIN_LIST.keys() and len(AUTOJOIN_LIST[connection.server]):
         connection.need_autojoin = True
     
     if not connection.live:
@@ -1583,7 +1581,7 @@ def _on_umode( connection, event ):
 
     if event.target().lower() == NICK.lower() and connection.need_autojoin:
         connection.need_autojoin = False
-        irc_process_command(connection, "join", AUTOJOIN_LIST[connections.keys()[connections.values().index(connection)]])
+        irc_process_command(connection, "join", AUTOJOIN_LIST[connection.server])
     system_write( '' + src + ' sets umode [' + event.arguments()[0] + ']' + targ, MAIN_WINDOW_NAME )
     
 def debug_event (connection, event):
@@ -1653,7 +1651,7 @@ def compile_whois (args, type, connection):
         if w.user[0] == "NickServ":
 #            if w.user[1] == "NickServ" and w.user[2] == "services." and w.user[4] == "Nickname Services":
             system_write( "Sending password. NickServ authenticated as:" )
-            irc_process_command(connection, "id", [PASS_LIST[connections.keys()[connections.values().index(connection)]]])
+            irc_process_command(connection, "id", [PASS_LIST[connection.server]])
 #                if connection.need_autojoin:
 #                    irc_process_command(connection, "join", AUTOJOIN_LIST)
 #                    connection.need_autojoin = False
@@ -1998,7 +1996,7 @@ def irc_process_command (connection, command, args):
 
         elif command in  ["id", "identify"]:
             if not args:
-                args.append(PASS_LIST[connections.keys()[connections.values().index(connection)]])
+                args.append(PASS_LIST[connection.server])
             connection.privmsg("nickserv", "identify " + args[0])
 
         elif command == "set":
