@@ -1254,7 +1254,7 @@ def _on_connect (connection, event):
 
     ping_server( connection )
 
-    if PASS:
+    if PASS_LIST[connection_name]:
         irc_process_command(connection, "whois", ["nickserv"])
 
     if connection_name in AUTOJOIN_LIST.keys() and len(AUTOJOIN_LIST[connection_name]):
@@ -1675,6 +1675,8 @@ def irc_process_command (connection, command, args):
     global SERVERS
     global PING_TIME
     global SHOW_URL_LIST
+    
+    connection_name = connections.keys()[connections.values().index(connection)]
 
     if command in ALIASES:
         command = ALIASES[ command ]
@@ -1995,7 +1997,7 @@ def irc_process_command (connection, command, args):
 
         elif command in  ["id", "identify"]:
             if not args:
-                args.append(PASS)
+                args.append(PASS_LIST[connection_name])
             connection.privmsg("nickserv", "identify " + args[0])
 
         elif command == "set":
@@ -2252,7 +2254,7 @@ def load_rc (path=None, ft=True):
     global _INPUT_HOOKS
     global OUTPUT_HOOKS
     global _OUTPUT_HOOKS
-    global SERVERS, PORT, NICK, REALNAME, PASS, LOG_ID, \
+    global SERVERS, PORT, NICK, REALNAME, PASS_LIST, LOG_ID, \
             SCROLL_TOPIC, AUTO_REJOIN, URL_ACTION, \
             AUTOJOIN_LIST, BUDDY_LIST, IGNORE, \
             IGNORE_TO, QUIT_MESSAGE, WATCH_LIST, \
