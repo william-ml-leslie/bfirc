@@ -52,6 +52,7 @@ if not os.access( RC_PATH, os.F_OK ):
 	RC_PATH = ""
 
 NICK = "bfirc-user"
+ALTNICK = None
 REALNAME = NICK
 SERVERS = []
 PORT = 6667
