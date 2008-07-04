@@ -278,7 +278,7 @@ class irc_window:
             s = s.replace( "\n", " " )
 
         if a in [ COLOURS["plain"], COLOURS["plain"] | curses.A_BOLD ]: 
-            rx = re.search( "((ftp|http):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
+            rx = re.search( "((ftp|https?):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
             if not rx:
                 rx = re.search( "(www\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
             if rx:
@@ -1296,7 +1296,8 @@ def _on_servicesmsg( connection, event ):
     _on_privmsg (connection, event)
 
 def _on_privnotice(connection, event):
-    if len( event.arguments() ) < 2:
+    _on_pubnotice(connection, event)
+"""    if len( event.arguments() ) < 2:
         return
 
     s = event.arguments()[1] 
@@ -1316,6 +1317,7 @@ def _on_privnotice(connection, event):
     if not current_buffer == buffer:
         buffers[buffer].has_unread = True
         buffers[buffer].has_unread_to_me = True
+"""
 
 
 def _on_pubnotice(connection, event):
