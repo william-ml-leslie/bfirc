@@ -58,7 +58,7 @@ COMMAND_LIST = [ "quit", "server", "server",
     "watch", "watch", "names", "ignore",
     "ignoreto", "ignoreto", "join",
     "part", "part", "open", "msg", "say",
-    "set", "away", "kick", "alias" ]
+    "set", "away", "kick", "alias", "clear" ]
 
 COMMAND_LIST.sort()            # hack hack hack
 
@@ -1706,7 +1706,7 @@ def irc_process_command (connection, command, args):
                 raise_error( "Error in hook handler for " + command + ":\n" + traceback.format_exc(0) )
 
 
-    v_cmds = [ "server", "url", "urls", "quit", "buddy", "close", "open", "set", "_stack", "loadrc", "connect", "alias" ]
+    v_cmds = [ "server", "url", "urls", "quit", "buddy", "close", "open", "set", "_stack", "loadrc", "connect", "alias", "clear" ]
 
 
     if not command in v_cmds and connection and not connection.connected:
@@ -2016,6 +2016,9 @@ def irc_process_command (connection, command, args):
 
         elif command == "null":
             pass
+            
+        elif command == "clear":
+            buffers[buf].clear()
 
         else:
             if command and not override:
