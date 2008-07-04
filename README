@@ -76,6 +76,8 @@ And here are the ones that are particular to bfirc:
 	e.g. /alias who names
 	This will make /who have the same functionality as /names
 	See ALIASES in sample-rc to set this permanently
+/clear
+	Clears the current buffer
 	
 Keys
 
@@ -169,6 +171,9 @@ PORT =
 	Connect on this port (default 6667).
 NICK =
 	Your nick.
+ALTNICK =
+	The nick to be used if NICK is unavailable for some reason (already logged
+	in, etc.)
 REALNAME =
 	Your real name (e.g. John Smith)
 PASS_LIST =
