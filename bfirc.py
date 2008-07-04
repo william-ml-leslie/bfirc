@@ -1510,12 +1510,15 @@ def _on_nick (connection, event):
     if need_refresh: update_info()
 
 def _on_nicknameinuse (connection, event):
-    global NICK
+    global NICK, ALTNICK
     if connection.live:
         raise_error( "Nickname " + NICK + " is already in use." )
         return
 
-    new_nick = NICK + str( int( random.random()*100 ) )
+    if ALTNICK and NICK != ALTNICK:
+        new_nick = ALTNICK
+    else:
+        new_nick = NICK + str( int( random.random()*100 ) )
 
     raise_error( "Nickname " + NICK + " in use, using " + new_nick + "" )
     NICK = new_nick
@@ -1553,9 +1556,13 @@ def _on_ctcpreply (connection, event):
         system_write( "Ping reply from " + birclib.nm_to_n( event.source() ) + " took " + secs + " seconds." )
     
 def _on_nickerror (connection, event):
-    global NICK
-    raise_error( "Erroneus nickname: " + event.arguments()[ 0 ] + ". Using bfirc-user." )
-    NICK = "bfirc-user"
+    global NICK, ALTNICK
+    if ALTNICK and NICK != ALTNICK:
+        raise_error("Erroneous nickname: " + event.arguments()[ 0 ] + ". Trying " + ALTNICK + ".")
+        NICK = ALTNICK
+    else:
+        raise_error( "Erroneous nickname: " + event.arguments()[ 0 ] + ". Using bfirc-user." )
+        NICK = "bfirc-user"
     irc_process_command( connection, "nick", [NICK] )
 
 def _on_nosuchnick (connection, event):
@@ -2243,17 +2250,18 @@ def ask_yes_no (q):
         return False
 
 def load_rc (path=None, ft=True):
-    global NICK
+#    global NICK
+    global ALTNICK
     global PORT
     global LOGS_DIR
     global NICK_COLS
     global COLOURS
     global EVENTS
-    global SYS_COLOURS
-    global INPUT_HOOKS
+#    global SYS_COLOURS
+#    global INPUT_HOOKS
     global HOOKS
     global _INPUT_HOOKS
-    global OUTPUT_HOOKS
+#    global OUTPUT_HOOKS
     global _OUTPUT_HOOKS
     global SERVERS, PORT, NICK, REALNAME, PASS_LIST, LOG_ID, \
             SCROLL_TOPIC, AUTO_REJOIN, URL_ACTION, \
