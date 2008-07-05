@@ -121,7 +121,7 @@ Up/Down
 	per-channel input buffer, bfirc has a global input buffer.
 
 And finally, a step-by-step on the sample-rc you should've got in the
-tarball. Note that this is all real, genuine Python code as of 0.0.5.
+tarball. Note that this is all real, genuine Python code.
 Firstly, some brief, essential notes on Python syntax:
 
 	*	All strings are enclosed in quotes, either like this:
@@ -129,9 +129,14 @@ Firstly, some brief, essential notes on Python syntax:
 		or this:
 			bar = "bar"
 	
-	*	Any parameter that has multiple values, e.g. the autojoin list,
+	*	Any parameter that has multiple values, e.g. your buddy list,
 		are a Python list object, and look like this:
 			foo = ['one', 'two', "three", "four", 'five']
+			
+	*	A dictionary is like a special list, which maps a key to a value, eg.
+		your dictionary of passwords. They look like this:
+			dict = {"name": "value", "bar": 345}
+		Note that the value can be anything.
 	
 	*	Numbers are expressed without any quotes, like this:
 			foo = 10
