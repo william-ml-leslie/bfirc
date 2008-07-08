@@ -278,7 +278,7 @@ class irc_window:
             s = s.replace( "\n", " " )
 
         if a in [ COLOURS["plain"], COLOURS["plain"] | curses.A_BOLD ]: 
-            rx = re.search( "((ftp|https?):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
+            rx = re.search( "((ftp|http|https):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
             if not rx:
                 rx = re.search( "(www\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
             if rx:
