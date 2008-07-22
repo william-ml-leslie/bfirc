@@ -1252,7 +1252,7 @@ def _on_connect (connection, event):
 
     ping_server( connection )
 
-    if PASS_LIST[connection.server]:
+    if connection.server in PASS_LIST.keys():
         irc_process_command(connection, "whois", ["nickserv"])
 
     if connection.server in AUTOJOIN_LIST.keys() and len(AUTOJOIN_LIST[connection.server]):
