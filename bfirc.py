@@ -2004,6 +2004,8 @@ def irc_process_command (connection, command, args):
             buffers[buf].write(NICK, text, "me_action")
 
         elif command in  ["id", "identify"]:
+            if not connection.server in PASS_LIST.keys():
+                return
             if not args:
                 args.append(PASS_LIST[connection.server])
             connection.privmsg("nickserv", "identify " + args[0])
