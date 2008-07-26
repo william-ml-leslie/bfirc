@@ -1500,12 +1500,13 @@ def _on_nick (connection, event):
             #buffers[key].nicklist.sort()
             buffers[key].write(src, targ, "nick")
 
-        if src == key:
+        if src.lower() == key:
             need_refresh = True
-            buffers[targ] = buffers.pop(key)
-            buffers[targ].write(src, targ, "nick")
+            buffer = targ.lower()
+            buffers[buffer] = buffers.pop(key)
+            buffers[buffer].write(src, targ, "nick")
 
-    if src == current_buffer:
+    if src.lower() == current_buffer:
         current_buffer = targ
     if need_refresh: update_info()
 
