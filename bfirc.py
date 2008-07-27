@@ -278,14 +278,15 @@ class irc_window:
             s = s.replace( "\n", " " )
 
         if a in [ COLOURS["plain"], COLOURS["plain"] | curses.A_BOLD ]: 
-            rx = re.search( "((ftp|http|https):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
+            rx = re.findall("((ftp|http|https):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
             if not rx:
-                rx = re.search( "(www\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s )
+                rx = re.findall("(www\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
             if rx:
-                URL = rx.groups()[0]
-                if URL not in URL_LIST and URL + "/" not in URL_LIST and "http://" + URL not in URL_LIST:
-                    if len( URL_LIST ) >= 10: URL_LIST.pop( 0 )
-                    URL_LIST.append( URL )
+                for match in rx:
+                    URL = match[0]
+                    if URL not in URL_LIST and URL + "/" not in URL_LIST and "http://" + URL not in URL_LIST:
+                        if len( URL_LIST ) >= 10: URL_LIST.pop( 0 )
+                        URL_LIST.append( URL )
         if a in [ COLOURS["select"], COLOURS["select"] | curses.A_BOLD, COLOURS["systemwrap"], COLOURS["systemwrap"] | curses.A_BOLD ]:
                 sel = True
 
