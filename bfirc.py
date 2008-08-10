@@ -277,7 +277,7 @@ class irc_window:
         if self == away_win and s.count( "\n" ) > 1:
             s = s.replace( "\n", " " )
 
-        if a in [ COLOURS["plain"], COLOURS["plain"] | curses.A_BOLD ]: 
+        if a not in [COLOURS["input"], COLOURS["input"] | curses.A_BOLD, COLOURS["topic"], COLOURS["topic"] | curses.A_BOLD]:
             rx = re.findall("((ftp|http|https):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
             if not rx:
                 rx = re.findall("(www\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
@@ -3447,16 +3447,10 @@ def main (scr):
                 irc_process_command(connections[current_con], command, args)
             elif len(line): irc_process_command( buffers[current_buffer].con, "say", line.split(" "))
 
-
-
-
 signal.signal(signal.SIGWINCH, sigwinch)
 signal.signal(signal.SIGINT, sigint)
 
 PASTE = Paste()
-
-
-
 
 try: curses.wrapper(main)
 except:
