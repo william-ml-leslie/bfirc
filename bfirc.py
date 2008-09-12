@@ -412,7 +412,7 @@ class irc_window:
         if LOGGING:
             pfx = get_log_prefix(event_type)
             if msg_from:
-                o = (pfx or "") + stamp + msg_from + string + "\n").replace("", "")
+                o = str((pfx or "") + stamp + msg_from + string + "\n").replace("", "")
                 log_write(self, o)
             else:
                 o = str((pfx or "") + stamp + string + "\n").replace('', '')
@@ -3433,7 +3433,10 @@ def main (scr):
             input_win.contents.append(line)
             input_win.i = len(input_win.contents)
 
-            if re.search("^/", line):
+            if re.search("^//", line):
+                line = "/".join(line.split("/")[1:])
+                irc_process_command(buffers[current_buffer].con, "say", line.split(" "))
+            elif re.search("^/", line):
                 command = "/".join(line.split("/")[1:])
                 args = command.split(" ")[1:]
                 command = command.split(" ")[0]
