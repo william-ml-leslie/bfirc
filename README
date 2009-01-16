@@ -90,15 +90,23 @@ Tab
 	it's ignored in the final message
 C-w
     Clear channel notifications from bottom of the screen.
-C-n
+ C-n
 	Jump to the next active buffer (starting at the left of the list), or go
 	through the buffers if there's no active ones.
 C-p
 	Same as C-n but go the other way through the buffers.
 C-u
-	Clear from cursor to beginning of line in input box.
+	Clear from cursor to beginning of line in input box, inserting into
+	the kill ring.
+C-k
+	Clear from cursor to end of line in input box, inserting into the kill
+	ring.
 C-a
 	Move cursor to beginning of line in input box.
+C-e
+	Move cursor to end of line in input box.
+C-y
+	Yank text from the kill ring into the input box.
 C-r
 	Enter kick ass backwards search mode (which can be safely interrupted
 	with C-c in case things go a bit crazy). Regex should work, see
@@ -107,18 +115,20 @@ C-r
 C-f
 	Pop up the channel list. You may select a channel by pressing the
 	corresponding number.
-C-e
+C-l
 	Show URL list (see /urls above).
 PgUp/PgDn
 	Indeed, scrolling, and it goes back through your logs too, because
 	it's magic.
 C-Left/C-Right
 	Jump back/forward a word.
+	(This does not work for me)
 C-Backspace/C-Delete
 	Delete a word backward or forward
 Up/Down
 	Go back and forth in the input buffer. Unlike irssi, which has a
 	per-channel input buffer, bfirc has a global input buffer.
+
 
 And finally, a step-by-step on the sample-rc you should've got in the
 tarball. Note that this is all real, genuine Python code.
