@@ -274,14 +274,21 @@ class irc_window:
                      COLOURS["topic"], COLOURS["topic"] | curses.A_BOLD]:
             rx = re.findall("((ftp|http|https):\/\/[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
             if not rx:
-                rx = re.findall("(www\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
+                # the useless group in the beginning is to force consistant
+                # types. prevents w from showing up in the url list.
+                rx = re.findall("((www)\.[a-zA-Z0-9\/\\\:\?\%\.\&\;=#\-\_\!\+\~]*)", s)
             if rx:
                 for match in rx:
+
                     URL = match[0]
                     if URL not in URL_LIST and URL + "/" not in URL_LIST and "http://" + URL not in URL_LIST:
+
+
+
                         if len(URL_LIST) >= 10:
                             URL_LIST.pop(0)
                         URL_LIST.append(URL)
+
         if a in [COLOURS["select"], COLOURS["select"] | curses.A_BOLD,
                  COLOURS["systemwrap"], COLOURS["systemwrap"] | curses.A_BOLD]:
                 sel = True
@@ -850,7 +857,7 @@ class InputWindow(irc_window):
         irc_window.__init__(self, scr, "input")
         self.autocomp = False
         self.temp_buffer = []
-        self.cpos = 0
+        self.cpos = 0 # ns_v
         self.pcpos = 0
         self.ts = ""
         self.mch = ""
@@ -1011,11 +1018,27 @@ class InputWindow(irc_window):
         if not self.s:
             return
 
-        s = self.s[len(self.s) - self.cpos:]
+        s_index = len(self.s) - self.cpos
+
+        kill, s = self.s[:s_index], self.s[s_index:]
         self.erase()
         self.s = s
         self.addstr(s, refresh=False)
         self.mvc(len(s))
+        return kill
+
+    def cleartoeol(self):
+        if not self.s:
+            return
+
+        s_index = len(self.s) - self.cpos
+
+        s, kill = self.s[:s_index], self.s[s_index:]
+        self.erase()
+        self.s = s
+        self.addstr(s, refresh=False)
+        self.mvc(len(s))
+        return kill
         
     def feed_input(self, key="", left=True, refresh=True):
         if len(self.s) == 1:
@@ -1675,6 +1698,7 @@ def irc_process_command(connection, command, args):
     global SERVERS
     global PING_TIME
     global SHOW_URL_LIST
+    global URL_LIST_CACHE
     
     if command in ALIASES:
         command = ALIASES[command]
@@ -1772,6 +1796,13 @@ def irc_process_command(connection, command, args):
 
             connection.pass_(args[0])
 
+        elif command == "ctcp":
+            if not len(args) > 1:
+                system_write("USAGE: /ctcp type target [param,]")
+                return
+
+            connection.ctcp(args[0], args[1], ' '.join(args[2:])) # verte
+
         elif command == "ping":
             if not len(args):
                 system_write("Ping: Must specify a user.")
@@ -1820,6 +1851,10 @@ def irc_process_command(connection, command, args):
             for i, t in enumerate(list_win.contents):
                 list_win.contents[i] = t.replace("http://www.", "")
                 list_win.contents[i] = t.replace("http://", "")
+
+            # this line fixes the race condition where the url list is
+            # modified before the selection is made.
+            URL_LIST_CACHE = URL_LIST[:]
 
             show_list_win (list_win, no_anim=True)
             SHOW_URL_LIST = True
@@ -2528,6 +2563,32 @@ def show_context(up):
         len(buffers[away_win.marks[away_win.selected][0]].contents) - away_win.marks[away_win.selected][1],
         abs=True)
 
+class KillRing(object):
+    def __init__(self, maxsize=200):
+        self.ring = []
+        self.back_position = 0
+        self.max = maxsize
+
+    def append(self, value):
+        self.ring.append(value)
+        self.back_position = -1
+
+    def yank(self):
+        if self.ring:
+            return self.ring[self.back_position]
+        return ''
+
+    def cycle(self):
+        prev = self.yank
+        self.back_position -= 1
+        return (self.yank(), prev)
+
+    def un_cycle(self):
+        self.back_position += 1
+
+KILL_RING = KillRing()
+
+
 def process_input(window, key, string="", refresh=True):
     global CHANNEL_LIST
     global PASTE
@@ -2547,7 +2608,7 @@ def process_input(window, key, string="", refresh=True):
 
     if SHOW_URL_LIST:
         if key in OPTION_LIST[0:len(list_win.contents)]:
-            URL = URL_LIST[OPTION_LIST.index(key)]
+            URL = URL_LIST_CACHE[OPTION_LIST.index(key)]
             irc_process_command(None, "url", None)
             hide_list_win(list_win)
             SHOW_URL_LIST = False
@@ -2684,10 +2745,10 @@ def process_input(window, key, string="", refresh=True):
             return
         return False
 
-    elif key == "KEY_PPAGE":
+    elif key in ["KEY_PPAGE", '\x1bv']: # M-v
         buffers[current_buffer].scroll(SCROLL_BY)
 
-    elif key == "KEY_NPAGE":
+    elif key in ["KEY_NPAGE", '\x16']: # C-v
         buffers[current_buffer].scroll(-SCROLL_BY)
     
     elif key in ["KEY_DOWN", "KEY_UP"]:
@@ -2721,15 +2782,16 @@ def process_input(window, key, string="", refresh=True):
     elif key == chr(1) or key == "KEY_HOME":
         window.mvc(len(window.s) - window.cpos)
 
-    elif key == "KEY_END":
+    #C-e (verte)
+    elif key in [chr(5), "KEY_END"]:
         window.mvc(-window.cpos)
 
     # C-x
     elif key == chr(24):
         con_switch()
 
-    # C-e
-    elif key == chr(5):
+    # C-l, was C-e
+    elif key == chr(12):
         irc_process_command(None, "urls", None)
 
     # C-n
@@ -2754,13 +2816,32 @@ def process_input(window, key, string="", refresh=True):
 
     # C-u
     elif key == chr(21):
-        window.cleartobol()
+        kill = window.cleartobol()
+        KILL_RING.append(kill)
         return ""
-    
-    # C-l
-    elif key == chr(12):
-        buffer_switch()
-        buffers[current_buffer].scroll_to(buffers[current_buffer].scrolling)
+
+    #I don't use this, goodbye!
+#    # C-l
+#    elif key == chr(12):
+#        buffer_switch()
+#        buffers[current_buffer].scroll_to(buffers[current_buffer].scrolling)
+
+    # verte's new features.
+
+    elif key == '\x0b': # C-k
+        kill = window.cleartoeol()
+        KILL_RING.append(kill)
+
+    elif key == '\x19': # C-y
+        text = KILL_RING.yank()
+        window.s += text
+        window.addstr(text)
+
+    elif key == '\x1by': # M-y
+        text, old = KILL_RING.cycle()
+        if window.replacetoeol(text) != old:
+            KILL_RING.un_cycle()
+            window.replacetoeol(old)
 
     # Tab
     elif key == chr(9):
@@ -2776,6 +2857,7 @@ def process_input(window, key, string="", refresh=True):
             return
 
         window.auto_complete()
+
 
 def space_event(win, buf):
     attr = None
@@ -2849,6 +2931,8 @@ def show_list_win(win, mark=None, mark_attr=None, no_anim=False):
     else:
         buffer = away_win
 
+    # XXX: debugging
+
     w = 18
     max = buffers[MAIN_WINDOW_NAME].w - 5
     for i, c in enumerate(win.contents):
@@ -2857,7 +2941,7 @@ def show_list_win(win, mark=None, mark_attr=None, no_anim=False):
             w = lc + 5
         elif lc > max:
             win.contents[i] = c[:max]
-            
+
     win.x = win.max_w - w - 1
     
     win.w = w
